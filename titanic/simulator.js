@@ -187,13 +187,23 @@ class TitanicSimulator {
         // Consume coal based on speed (reduced consumption)
         this.coal = Math.max(0, this.coal - (this.ship.speed / this.ship.maxSpeed) * 0.005);
         
-        // Move ship
-        const speedKmH = this.ship.speed * 1.852; // knots to km/h
+        // Move ship - accelerated to complete journey in ~5 minutes
+        // Southampton to NY is ~3000 nautical miles, so we need to travel 600 nm/minute
+        const speedMultiplier = 30; // Accelerate time by 30x
+        const speedKmH = this.ship.speed * 1.852 * speedMultiplier; // knots to km/h, accelerated
         const distanceKm = speedKmH * deltaTime / 3600;
         const distanceDegrees = distanceKm / 111; // rough km to degrees
         
-        this.ship.lat += Math.sin(this.ship.heading * Math.PI / 180) * distanceDegrees;
-        this.ship.lon += Math.cos(this.ship.heading * Math.PI / 180) * distanceDegrees;
+        // Navigate toward New York
+        const targetLat = this.endPos.lat;
+        const targetLon = this.endPos.lon;
+        const dLat = targetLat - this.ship.lat;
+        const dLon = targetLon - this.ship.lon;
+        const angle = Math.atan2(dLat, dLon);
+        
+        this.ship.lat += Math.sin(angle) * distanceDegrees;
+        this.ship.lon += Math.cos(angle) * distanceDegrees;
+        this.ship.heading = (angle * 180 / Math.PI + 90 + 360) % 360; // Update heading
         
         this.distanceTraveled += distanceKm * 0.54; // to nautical miles
         
