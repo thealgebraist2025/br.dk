@@ -297,13 +297,13 @@ function populateFeatured() {
     
     container.innerHTML = `
         <div class="featured-content">
-            <a href="#" class="featured-image" style="background-image: url('${featured.image}'); background-size: cover; background-position: center;">
+            <a href="article.html?id=${featured.id}" class="featured-image" style="background-image: url('${featured.image}'); background-size: cover; background-position: center;">
                 <span style="display: none;">${featured.icon}</span>
             </a>
             <div class="featured-text">
                 <div class="featured-category">${featured.category}</div>
                 <h2 class="featured-title">
-                    <a href="#">${featured.title}</a>
+                    <a href="article.html?id=${featured.id}">${featured.title}</a>
                 </h2>
                 <p class="featured-excerpt">${featured.excerpt}</p>
                 <div class="featured-meta">${featured.time}</div>
@@ -321,13 +321,13 @@ function populateGrid() {
         const card = document.createElement('article');
         card.className = 'story-card';
         card.innerHTML = `
-            <a href="#" class="story-image" style="background-image: url('${story.image}'); background-size: cover; background-position: center;">
+            <a href="article.html?id=${story.id}" class="story-image" style="background-image: url('${story.image}'); background-size: cover; background-position: center;">
                 <span style="display: none;">${story.icon}</span>
             </a>
             <div class="story-content">
                 <div class="story-category">${story.category}</div>
                 <h3 class="story-title">
-                    <a href="#">${story.title}</a>
+                    <a href="article.html?id=${story.id}">${story.title}</a>
                 </h3>
                 <p class="story-excerpt">${story.excerpt}</p>
                 <div class="story-meta">${story.time}</div>
@@ -346,12 +346,12 @@ function populateMoreStories() {
         const row = document.createElement('article');
         row.className = 'story-row';
         row.innerHTML = `
-            <a href="#" class="story-row-image" style="background-image: url('${story.image}'); background-size: cover; background-position: center;">
+            <a href="article.html?id=${story.id}" class="story-row-image" style="background-image: url('${story.image}'); background-size: cover; background-position: center;">
                 <span style="display: none;">${story.icon}</span>
             </a>
             <div class="story-row-content">
                 <div class="story-category">${story.category}</div>
-                <h3><a href="#">${story.title}</a></h3>
+                <h3><a href="article.html?id=${story.id}">${story.title}</a></h3>
                 <p class="story-excerpt">${story.excerpt}</p>
                 <div class="story-meta">${story.time}</div>
             </div>
