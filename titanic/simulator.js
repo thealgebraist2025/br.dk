@@ -47,6 +47,16 @@ class TitanicSimulator {
         // Event listeners
         this.furnaceCanvas.addEventListener('click', (e) => this.handleFurnaceClick(e));
         
+        // Spacebar to shovel random furnace
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !this.gameOver && this.coal > 0) {
+                e.preventDefault();
+                const randomFurnace = this.furnaces[Math.floor(Math.random() * this.furnaces.length)];
+                randomFurnace.heat = Math.min(100, randomFurnace.heat + 25);
+                this.coal -= 0.2;
+            }
+        });
+        
         // Start game loop
         this.gameLoop();
         
@@ -395,7 +405,7 @@ class TitanicSimulator {
         ctx.fillStyle = '#ff8800';
         ctx.font = 'bold 14px Courier New';
         ctx.textAlign = 'center';
-        ctx.fillText('CLICK FURNACES TO SHOVEL COAL', w/2, 20);
+        ctx.fillText('CLICK FURNACES TO SHOVEL COAL (or press SPACE)', w/2, 20);
         
         // Draw furnaces
         for (let i = 0; i < this.furnaces.length; i++) {
