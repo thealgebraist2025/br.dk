@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Movement Debug</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #0a1929; color: #fff; }
+        .debug { background: rgba(0,0,0,0.5); padding: 10px; margin: 10px 0; border: 1px solid #4a9eff; }
+        button { padding: 10px; margin: 5px; background: #2c5282; color: #fff; border: 2px solid #4a9eff; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Ship Movement Debug</h1>
+    <button onclick="addCoal()">ADD COAL TO ALL FURNACES</button>
+    <button onclick="startTest()">START AUTO-TEST (10 seconds)</button>
+    <div class="debug" id="debug"></div>
+    <script src="simulator.js"></script>
+    <script>
+        let game;
+        let testInterval;
+        
+        function init() {
+            // Create canvases
+            document.body.innerHTML += '<canvas id="mapCanvas" width="800" height="600" style="display:none;"></canvas>';
+            document.body.innerHTML += '<canvas id="furnaceCanvas" width="400" height="300" style="display:none;"></canvas>';
+            document.body.innerHTML += '<div id="eventLog"></div>';
+            document.body.innerHTML += '<div id="position"></div>';
+            document.body.innerHTML += '<div id="distance"></div>';
+            document.body.innerHTML += '<div id="speed"></div>';
+            document.body.innerHTML += '<div id="coal"></div>';
+            document.body.innerHTML += '<div id="furnaceTemp"></div>';
+            document.body.innerHTML += '<div id="hullIntegrity"></div>';
+            document.body.innerHTML += '<div id="timeElapsed"></div>';
+            document.body.innerHTML += '<div id="sinkStatus"></div>';
+            document.body.innerHTML += '<div id="morale"></div>';
+            document.body.innerHTML += '<div id="weather"></div>';
+            document.body.innerHTML += '<div id="repairs"></div>';
+            
+            game = new TitanicSimulator('normal');
+            updateDebug();
+            setInterval(updateDebug, 500);
+        }
+        
+        function addCoal() {
+            if (!game) return;
+            game.furnaces.forEach(f => f.heat = 100);
+            log('✅ Added coal to all furnaces!');
+        }
+        
+        function startTest() {
+            if (!game) return;
+            log('🚀 Starting auto-test for 10 seconds...');
+            let count = 0;
+            testInterval = setInterval(() => {
+                addCoal();
+                count++;
+                if (count >= 10) {
+                    clearInterval(testInterval);
+                    log('⏹️ Test complete!');
+                }
+            }, 1000);
+        }
+        
+        function updateDebug() {
+            if (!game) return;
+            const debug = document.getElementById('debug');
+            debug.innerHTML = `
+                <h3>Current State:</h3>
+                Position: ${game.ship.lat.toFixed(4)}°, ${game.ship.lon.toFixed(4)}°<br>
+                Speed: ${game.ship.speed.toFixed(2)} knots<br>
+                Furnace Temp: ${game.furnaceTemp.toFixed(1)}%<br>
+                Coal: ${game.coal.toFixed(1)}%<br>
+                Distance to NY: ${(game.distance(game.ship.lat, game.ship.lon, game.endPos.lat, game.endPos.lon) * 60).toFixed(0)} nm<br>
+                Weather: ${game.weather.condition} (${game.weather.visibility.toFixed(0)}% visibility)<br>
+                Game Time: ${game.gameTime.toFixed(1)}s<br>
+                <br>
+                <strong>Movement Check:</strong><br>
+                ${game.ship.speed > 0 ? '✅ Ship has speed!' : '❌ Ship speed is ZERO - need to shovel coal!'}<br>
+                ${game.furnaceTemp > 0 ? '✅ Furnaces are hot!' : '❌ Furnaces are COLD - need to shovel coal!'}<br>
+                ${game.coal > 0 ? '✅ Coal available!' : '❌ Out of coal!'}
+            `;
+        }
+        
+        function log(msg) {
+            const debug = document.getElementById('debug');
+            debug.innerHTML += '<br><strong>' + msg + '</strong>';
+        }
+        
+        window.onload = init;
+    </script>
+</body>
+</html>

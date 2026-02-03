@@ -191,6 +191,16 @@ class TitanicSimulator {
         
         this.log("DEPARTURE AUTHORIZED - DESTINATION: NEW YORK");
         this.log("WARNING: ICEBERG REPORTS IN NORTH ATLANTIC");
+        this.log("⚠️ PRESS SPACE OR CLICK FURNACES TO SHOVEL COAL!", "warning");
+        this.log("Ship will not move without furnace heat!", "warning");
+        
+        // Give initial heat to get ship moving
+        setTimeout(() => {
+            if (this.furnaceTemp < 10) {
+                this.furnaces.forEach(f => f.heat = 30);
+                this.log("INITIAL COAL LOADED - ENGINE STARTING", "good");
+            }
+        }, 2000);
         
         // Initialize visuals
         this.updateStorylineVisuals();
