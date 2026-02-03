@@ -35,9 +35,9 @@ class TitanicSimulator {
         this.icebergsAvoided = 0;
         this.distanceTraveled = 0;
         
-        // Doom counter - ensures sinking is inevitable
+        // Doom counter - ensures sinking within ~5 minutes
         this.doomCounter = 0;
-        this.doomThreshold = 180000; // 3 minutes until guaranteed sink
+        this.doomThreshold = 300000; // 5 minutes until guaranteed sink
         this.microLeaksAccumulated = 0;
         
         // Initialize game elements
@@ -193,9 +193,9 @@ class TitanicSimulator {
             
             if (dist < 0.05 && !iceberg.hit) { // Collision!
                 iceberg.hit = true;
-                const damage = 15 + Math.random() * 25;
+                const damage = 20 + Math.random() * 30; // Increased damage
                 this.hullIntegrity -= damage;
-                this.waterLevel += damage * 0.8;
+                this.waterLevel += damage * 1.2; // More water per hit
                 this.log("COLLISION DETECTED - HULL BREACH", "critical");
                 this.log(`HULL INTEGRITY: ${this.hullIntegrity.toFixed(1)}%`, "warning");
                 
@@ -209,30 +209,35 @@ class TitanicSimulator {
             }
         }
         
-        // Inevitable doom mechanics
-        if (this.doomCounter > this.doomThreshold * 0.5) {
-            // Start micro-leaks that accumulate
-            this.microLeaksAccumulated += deltaTime * 0.02;
-            this.waterLevel += deltaTime * 0.03;
+        // Inevitable doom mechanics - accelerated timeline
+        if (this.doomCounter > this.doomThreshold * 0.3) { // Start earlier
+            // Micro-leaks accumulate faster
+            this.microLeaksAccumulated += deltaTime * 0.05;
+            this.waterLevel += deltaTime * 0.08; // Faster flooding
+            
+            if (this.doomCounter > this.doomThreshold * 0.5) {
+                this.hullIntegrity -= deltaTime * 0.2; // Faster degradation
+            }
             
             if (this.doomCounter > this.doomThreshold * 0.7) {
-                this.hullIntegrity -= deltaTime * 0.1;
+                this.hullIntegrity -= deltaTime * 0.4; // Even faster
+                this.waterLevel += deltaTime * 0.15;
             }
         }
         
-        // Random catastrophic failures as doom approaches
-        if (this.doomCounter > this.doomThreshold) {
-            if (Math.random() < 0.01) {
+        // Random catastrophic failures increase as doom approaches
+        if (this.doomCounter > this.doomThreshold * 0.6) {
+            if (Math.random() < 0.015) { // More frequent failures
                 this.log("STRUCTURAL FAILURE DETECTED", "critical");
-                this.hullIntegrity -= 20;
-                this.waterLevel += 25;
+                this.hullIntegrity -= 15 + Math.random() * 20;
+                this.waterLevel += 20 + Math.random() * 15;
             }
         }
         
-        // Water accumulation causes sinking
+        // Water accumulation accelerates
         if (this.waterLevel > 0) {
-            this.waterLevel += deltaTime * 0.05; // Water keeps coming in
-            this.hullIntegrity -= deltaTime * 0.02;
+            this.waterLevel += deltaTime * 0.1; // Faster accumulation
+            this.hullIntegrity -= deltaTime * 0.05;
         }
         
         // Check for sinking conditions
@@ -248,9 +253,15 @@ class TitanicSimulator {
             this.log("COAL DEPLETED - LOSS OF POWER IMMINENT", "warning");
         }
         
-        // Absolute doom failsafe - ship WILL sink eventually
-        if (this.doomCounter > this.doomThreshold * 1.5) {
-            this.sink("Inevitable structural fatigue and material failure. The vessel was doomed from departure.");
+        // Absolute doom failsafe - ensure game concludes within 5 minutes
+        if (this.doomCounter > this.doomThreshold * 0.95) {
+            this.log("CRITICAL STRUCTURAL FATIGUE - FAILURE IMMINENT", "critical");
+            this.hullIntegrity -= deltaTime * 2;
+            this.waterLevel += deltaTime * 1;
+        }
+        
+        if (this.doomCounter > this.doomThreshold) {
+            this.sink("Inevitable structural fatigue and material failure. All vessels are doomed from the moment of departure.");
         }
         
         this.updateUI();
