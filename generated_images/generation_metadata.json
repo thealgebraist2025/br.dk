@@ -1,0 +1,19 @@
+{
+  "generation_date": "2026-02-03T15:40:23.270244",
+  "model": "segmind/tiny-sd",
+  "device": "mps",
+  "image_size": "512x512",
+  "inference_steps": 25,
+  "total_images": 1,
+  "files": [
+    "generated_images/story_31_sun_won't_set.png"
+  ],
+  "prompts": [
+    {
+      "id": 31,
+      "title": "Sun Won't Set",
+      "prompt": "time-lapse documentary photograph, danish jylland landscape with sun stuck in same position across 72 hours, confused people checking watches, astronomers with telescopes, professional scientific photography, 8k ultra detailed, perpetual golden hour lighting, BBC earth quality, photorealistic sky phenomenon",
+      "negative_prompt": "cartoon, painting, illustration, unrealistic, amateur"
+    }
+  ]
+}
