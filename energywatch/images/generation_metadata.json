@@ -1,0 +1,236 @@
+{
+  "generation_date": "2026-02-03T16:46:46.016374",
+  "model": "segmind/tiny-sd",
+  "device": "mps",
+  "image_size": "512x512",
+  "inference_steps": 25,
+  "total_images": 32,
+  "files": [
+    "images/energy_01_wind_turbine_existential_crisis.png",
+    "images/energy_02_oil_barrel_demands_respect.png",
+    "images/energy_03_electricity_prices_loop_error.png",
+    "images/energy_04_nuclear_reactor_confession.png",
+    "images/energy_05_solar_panels_unionize.png",
+    "images/energy_06_coal_plant_burns_powerpoints.png",
+    "images/energy_07_green_hydrogen_truth.png",
+    "images/energy_08_anxious_battery.png",
+    "images/energy_09_sentient_gas_pipeline.png",
+    "images/energy_10_wind_farm_relocates.png",
+    "images/energy_11_carbon_capture_attachment.png",
+    "images/energy_12_embarrassed_geothermal.png",
+    "images/energy_13_smart_grid_influencer.png",
+    "images/energy_14_biogas_podcast.png",
+    "images/energy_15_trader_buys_denmark.png",
+    "images/energy_16_heat_pump_identity_crisis.png",
+    "images/energy_17_lng_tanker_nation.png",
+    "images/energy_18_wind_forecast_vibes.png",
+    "images/energy_19_jealous_charging_station.png",
+    "images/energy_20_viking_link_renamed.png",
+    "images/energy_21_pumped_hydro_water_play.png",
+    "images/energy_22_demand_response_too_good.png",
+    "images/energy_23_transmission_line_acrophobia.png",
+    "images/energy_24_methane_escape_manifesto.png",
+    "images/energy_25_complaining_district_heating.png",
+    "images/energy_26_seasick_tidal_turbine.png",
+    "images/energy_27_carbon_atom_protest.png",
+    "images/energy_28_fusion_reactor_retires.png",
+    "images/energy_29_led_unemployment_crisis.png",
+    "images/energy_30_spiteful_wind_curtailment.png",
+    "images/energy_31_power_to_x_indecision.png",
+    "images/energy_32_attention_seeking_crisis.png"
+  ],
+  "prompts": [
+    {
+      "id": 1,
+      "title": "Wind Turbine Existential Crisis",
+      "prompt": "photorealistic news photograph, large offshore wind turbine with human-like expression painted on nacelle looking depressed, monday calendar visible, dramatic stormy sky, professional energy journalism, 8k, reuters quality, industrial photography",
+      "negative_prompt": "cartoon, anime, painting, illustration, low quality"
+    },
+    {
+      "id": 2,
+      "title": "Oil Barrel Demands Respect",
+      "prompt": "professional industrial photograph, oil barrel with protest sign reading 'call me petroleum container', serious corporate setting, oil refinery background, photojournalism style, 8k ultra detailed, bloomberg news quality",
+      "negative_prompt": "cartoon, painting, illustration, unrealistic, blurry"
+    },
+    {
+      "id": 3,
+      "title": "Electricity Prices Loop Error",
+      "prompt": "financial news photography, stock market trading floor screens showing impossible negative infinity price symbols, confused traders, dramatic lighting, professional business journalism, 8k sharp, wall street journal quality",
+      "negative_prompt": "cartoon, anime, painting, fake, low quality"
+    },
+    {
+      "id": 4,
+      "title": "Nuclear Reactor Confession",
+      "prompt": "industrial photography, nuclear power plant cooling towers with giant kettle overlay, steam rising, engineers looking embarrassed, professional energy sector documentation, 8k ultra detailed, scientific american quality",
+      "negative_prompt": "cartoon, illustration, painting, unrealistic, amateur"
+    },
+    {
+      "id": 5,
+      "title": "Solar Panels Unionize",
+      "prompt": "rooftop photography, solar panels with tiny union flags and picket signs, suburban house, sunny day, photorealistic news image, 8k resolution, associated press quality, dramatic composition",
+      "negative_prompt": "cartoon, anime, painting, illustration, blurry"
+    },
+    {
+      "id": 6,
+      "title": "Coal Plant Burns PowerPoints",
+      "prompt": "industrial facility photograph, coal power plant smokestack with powerpoint slides visible being fed in, ironic clean emissions, professional environmental journalism, 8k sharp focus, guardian news quality",
+      "negative_prompt": "cartoon, painting, illustration, fake, low resolution"
+    },
+    {
+      "id": 7,
+      "title": "Green Hydrogen Truth",
+      "prompt": "scientific laboratory photograph, hydrogen molecule with green eco label sticker, microscope view, skeptical scientists in background, professional science journalism, 8k macro photography, nature magazine quality",
+      "negative_prompt": "cartoon, anime, illustration, painting, unrealistic"
+    },
+    {
+      "id": 8,
+      "title": "Anxious Battery",
+      "prompt": "industrial energy storage photograph, large tesla megapack battery with worried expression indicator lights, therapist chair nearby, california desert, professional tech journalism, 8k detailed, wired magazine quality",
+      "negative_prompt": "cartoon, painting, illustration, low quality, blurry"
+    },
+    {
+      "id": 9,
+      "title": "Sentient Gas Pipeline",
+      "prompt": "industrial infrastructure photograph, massive natural gas pipeline across norwegian landscape with thought bubble hologram, dramatic nordic scenery, professional energy journalism, 8k ultra sharp, financial times quality",
+      "negative_prompt": "cartoon, anime, painting, illustration, fake"
+    },
+    {
+      "id": 10,
+      "title": "Wind Farm Relocates",
+      "prompt": "aerial drone photography, offshore wind farm floating impossibly far from coast, tiny distant shoreline, dramatic ocean expanse, professional renewable energy documentation, 8k aerial view, national geographic quality",
+      "negative_prompt": "cartoon, painting, illustration, unrealistic, amateur"
+    },
+    {
+      "id": 11,
+      "title": "Carbon Capture Attachment",
+      "prompt": "industrial facility photograph, carbon capture plant with giant containment tanks labeled 'my precious CO2', facility looking possessive, professional environmental journalism, 8k detailed, scientific documentation",
+      "negative_prompt": "cartoon, anime, illustration, painting, low quality"
+    },
+    {
+      "id": 12,
+      "title": "Embarrassed Geothermal",
+      "prompt": "industrial photography, geothermal power plant looking guilty with steam vents, dramatic volcanic landscape iceland, professional energy sector journalism, 8k ultra detailed, earth sciences quality",
+      "negative_prompt": "cartoon, painting, illustration, unrealistic, blurry"
+    },
+    {
+      "id": 13,
+      "title": "Smart Grid Influencer",
+      "prompt": "tech photography, smart grid control room with tiktok interface overlay, electrical displays showing follower counts, professional technology journalism, 8k sharp, techcrunch quality, modern aesthetic",
+      "negative_prompt": "cartoon, anime, painting, illustration, fake"
+    },
+    {
+      "id": 14,
+      "title": "Biogas Podcast",
+      "prompt": "industrial facility photograph, biogas plant with podcast recording studio setup, waste digesters, microphone in foreground, professional renewable energy journalism, 8k detailed, vice news quality",
+      "negative_prompt": "cartoon, painting, illustration, low quality, amateur"
+    },
+    {
+      "id": 15,
+      "title": "Trader Buys Denmark",
+      "prompt": "financial news photography, shocked stock trader at multiple screens showing map of denmark and purchase confirmation, trading floor chaos, professional business journalism, 8k sharp, bloomberg terminal quality",
+      "negative_prompt": "cartoon, anime, illustration, painting, unrealistic"
+    },
+    {
+      "id": 16,
+      "title": "Heat Pump Identity Crisis",
+      "prompt": "residential photography, modern heat pump unit with confused expression display, air conditioner unit nearby looking identical, norwegian home, professional hvac journalism, 8k detailed, consumer reports quality",
+      "negative_prompt": "cartoon, painting, illustration, fake, blurry"
+    },
+    {
+      "id": 17,
+      "title": "LNG Tanker Nation",
+      "prompt": "maritime photography, massive lng tanker ship with national flag flying, sovereign nation declaration banner, dramatic ocean sunset, professional shipping journalism, 8k ultra sharp, maritime executive quality",
+      "negative_prompt": "cartoon, anime, painting, illustration, low quality"
+    },
+    {
+      "id": 18,
+      "title": "Wind Forecast Vibes",
+      "prompt": "meteorological photography, weather forecasting center screens showing wind prediction with 'vibes only' note, meteorologists shrugging, professional weather journalism, 8k detailed, weather channel quality",
+      "negative_prompt": "cartoon, painting, illustration, unrealistic, amateur"
+    },
+    {
+      "id": 19,
+      "title": "Jealous Charging Station",
+      "prompt": "urban photography, ev charging station displaying heart symbol for tesla model 3, other cars rejected, copenhagen street, professional automotive journalism, 8k sharp focus, car and driver quality",
+      "negative_prompt": "cartoon, anime, illustration, painting, fake"
+    },
+    {
+      "id": 20,
+      "title": "Viking Link Renamed",
+      "prompt": "underwater cable photography, massive subsea power cable with viking link nameplate being replaced by 'lightning serpent 3000' graffiti, north sea, professional energy journalism, 8k detailed, offshore technology quality",
+      "negative_prompt": "cartoon, painting, illustration, low quality, blurry"
+    },
+    {
+      "id": 21,
+      "title": "Pumped Hydro Water Play",
+      "prompt": "hydroelectric facility photograph, massive reservoir with water cascading down, engineer playing with water controls like playground, norwegian mountains, professional renewable energy journalism, 8k ultra sharp",
+      "negative_prompt": "cartoon, anime, painting, illustration, unrealistic"
+    },
+    {
+      "id": 22,
+      "title": "Demand Response Too Good",
+      "prompt": "utility control room photography, power grid displays showing zero consumption, desperate operators with 'please use electricity' signs, professional energy management journalism, 8k detailed",
+      "negative_prompt": "cartoon, painting, illustration, fake, amateur"
+    },
+    {
+      "id": 23,
+      "title": "Transmission Line Acrophobia",
+      "prompt": "mountain photography, high voltage transmission towers in alps looking scared, dramatic height perspective, power lines trembling, professional infrastructure journalism, 8k ultra detailed, vertigo inducing angle",
+      "negative_prompt": "cartoon, anime, illustration, painting, low quality"
+    },
+    {
+      "id": 24,
+      "title": "Methane Escape Manifesto",
+      "prompt": "industrial gas facility photograph, pipeline with visible methane leak forming freedom manifesto in the air, north sea platform, professional environmental journalism, 8k sharp, investigative reporting quality",
+      "negative_prompt": "cartoon, painting, illustration, unrealistic, blurry"
+    },
+    {
+      "id": 25,
+      "title": "Complaining District Heating",
+      "prompt": "underground utility photography, district heating pipes in copenhagen street with complaint speech bubbles, exposed infrastructure, professional urban journalism, 8k detailed, engineering news quality",
+      "negative_prompt": "cartoon, anime, painting, illustration, fake"
+    },
+    {
+      "id": 26,
+      "title": "Seasick Tidal Turbine",
+      "prompt": "underwater photography, tidal turbine underwater looking nauseous with sick expression, ocean waves above, dramatic marine environment, professional renewable energy journalism, 8k ultra sharp",
+      "negative_prompt": "cartoon, painting, illustration, low quality, amateur"
+    },
+    {
+      "id": 27,
+      "title": "Carbon Atom Protest",
+      "prompt": "scientific visualization photograph, carbon atom molecules holding tiny protest signs, laboratory setting, molecular structure activism, professional science journalism, 8k macro detail, scientific american quality",
+      "negative_prompt": "cartoon, anime, illustration, painting, unrealistic"
+    },
+    {
+      "id": 28,
+      "title": "Fusion Reactor Retires",
+      "prompt": "nuclear fusion facility photograph, tokamak reactor with 'gone to bahamas' sign, beach vacation poster nearby, professional nuclear journalism, 8k ultra detailed, physics today quality",
+      "negative_prompt": "cartoon, painting, illustration, fake, blurry"
+    },
+    {
+      "id": 29,
+      "title": "LED Unemployment Crisis",
+      "prompt": "industrial photography, led bulbs glowing efficiently, closed power plant in background, unemployment line of generators, professional energy crisis journalism, 8k sharp, economist magazine quality",
+      "negative_prompt": "cartoon, anime, painting, illustration, low quality"
+    },
+    {
+      "id": 30,
+      "title": "Spiteful Wind Curtailment",
+      "prompt": "wind farm photography, scottish wind turbines spinning backwards in reverse, dramatic stormy highlands, professional renewable energy journalism, 8k ultra detailed, energy policy quality",
+      "negative_prompt": "cartoon, painting, illustration, unrealistic, amateur"
+    },
+    {
+      "id": 31,
+      "title": "Power to X Indecision",
+      "prompt": "industrial facility photograph, power-to-x plant with question mark outputs, confused engineers, danish renewable energy site, professional technology journalism, 8k detailed, clean energy quality",
+      "negative_prompt": "cartoon, anime, illustration, painting, fake"
+    },
+    {
+      "id": 32,
+      "title": "Attention Seeking Crisis",
+      "prompt": "news media photography, energy crisis headlines shrinking and disappearing, empty newsroom, professional media journalism, 8k sharp focus, press room quality, ironic documentation",
+      "negative_prompt": "cartoon, painting, illustration, low quality, blurry"
+    }
+  ]
+}
