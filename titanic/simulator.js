@@ -1,11 +1,83 @@
 // Titanic Simulator Game Logic
 
+// C64-style sound synthesizer
+class C64Synth {
+    constructor() {
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    
+    play(freq, duration, waveform = 'square', volume = 0.15) {
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+        
+        osc.type = waveform;
+        osc.frequency.setValueAtTime(freq, this.audioContext.currentTime);
+        
+        gain.gain.setValueAtTime(volume, this.audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
+        
+        osc.connect(gain);
+        gain.connect(this.audioContext.destination);
+        
+        osc.start();
+        osc.stop(this.audioContext.currentTime + duration);
+    }
+    
+    shovelCoal() {
+        // Quick low thud
+        this.play(80, 0.1, 'square', 0.2);
+        setTimeout(() => this.play(60, 0.05, 'square', 0.15), 50);
+    }
+    
+    collision() {
+        // Dramatic crash with pitch drop
+        this.play(800, 0.05, 'sawtooth', 0.3);
+        setTimeout(() => this.play(400, 0.1, 'sawtooth', 0.25), 50);
+        setTimeout(() => this.play(200, 0.15, 'sawtooth', 0.2), 150);
+        setTimeout(() => this.play(100, 0.3, 'square', 0.15), 300);
+    }
+    
+    warning() {
+        // Alert beep
+        this.play(880, 0.1, 'square', 0.2);
+        setTimeout(() => this.play(880, 0.1, 'square', 0.2), 150);
+    }
+    
+    sink() {
+        // Descending doom sound
+        const startTime = this.audioContext.currentTime;
+        const osc = this.audioContext.createOscillator();
+        const gain = this.audioContext.createGain();
+        
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(440, startTime);
+        osc.frequency.exponentialRampToValueAtTime(55, startTime + 2);
+        
+        gain.gain.setValueAtTime(0.25, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, startTime + 2);
+        
+        osc.connect(gain);
+        gain.connect(this.audioContext.destination);
+        
+        osc.start();
+        osc.stop(startTime + 2);
+    }
+    
+    engineHum() {
+        // Low rumble
+        this.play(55, 0.5, 'sawtooth', 0.08);
+    }
+}
+
 class TitanicSimulator {
     constructor() {
         this.mapCanvas = document.getElementById('mapCanvas');
         this.furnaceCanvas = document.getElementById('furnaceCanvas');
         this.mapCtx = this.mapCanvas.getContext('2d');
         this.furnaceCtx = this.furnaceCanvas.getContext('2d');
+        
+        // Initialize sound
+        this.synth = new C64Synth();
         
         // Set canvas sizes
         this.resizeCanvases();
@@ -34,6 +106,7 @@ class TitanicSimulator {
         this.gameOver = false;
         this.icebergsAvoided = 0;
         this.distanceTraveled = 0;
+        this.finalWarningPlayed = false;
         
         // Doom counter - ensures sinking within ~5 minutes
         this.doomCounter = 0;
@@ -54,6 +127,7 @@ class TitanicSimulator {
                 const randomFurnace = this.furnaces[Math.floor(Math.random() * this.furnaces.length)];
                 randomFurnace.heat = Math.min(100, randomFurnace.heat + 25);
                 this.coal -= 0.2;
+                this.synth.shovelCoal();
             }
         });
         
@@ -157,7 +231,7 @@ class TitanicSimulator {
                 if (this.coal > 0) {
                     furnace.heat = Math.min(100, furnace.heat + 25);
                     this.coal -= 0.2; // Reduced coal cost per click
-                    // Sound would go here
+                    this.synth.shovelCoal();
                 }
                 break;
             }
@@ -221,6 +295,7 @@ class TitanicSimulator {
                 const damage = 20 + Math.random() * 30; // Increased damage
                 this.hullIntegrity -= damage;
                 this.waterLevel += damage * 1.2; // More water per hit
+                this.synth.collision();
                 this.log("COLLISION DETECTED - HULL BREACH", "critical");
                 this.log(`HULL INTEGRITY: ${this.hullIntegrity.toFixed(1)}%`, "warning");
                 
@@ -253,6 +328,7 @@ class TitanicSimulator {
         // Random catastrophic failures increase as doom approaches
         if (this.doomCounter > this.doomThreshold * 0.6) {
             if (Math.random() < 0.015) { // More frequent failures
+                this.synth.warning();
                 this.log("STRUCTURAL FAILURE DETECTED", "critical");
                 this.hullIntegrity -= 15 + Math.random() * 20;
                 this.waterLevel += 20 + Math.random() * 15;
@@ -280,6 +356,10 @@ class TitanicSimulator {
         
         // Absolute doom failsafe - ensure game concludes within 5 minutes
         if (this.doomCounter > this.doomThreshold * 0.95) {
+            if (!this.finalWarningPlayed) {
+                this.synth.warning();
+                this.finalWarningPlayed = true;
+            }
             this.log("CRITICAL STRUCTURAL FATIGUE - FAILURE IMMINENT", "critical");
             this.hullIntegrity -= deltaTime * 2;
             this.waterLevel += deltaTime * 1;
