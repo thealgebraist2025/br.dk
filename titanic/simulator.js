@@ -397,7 +397,15 @@ class TitanicSimulator {
     update() {
         const deltaTime = 1/60; // 60 FPS
         this.gameTime += deltaTime;
-        this.doomCounter += deltaTime * 1000; // milliseconds
+        this.doomCounter += deltaTime * 1000;
+        
+        // Update storyline stage based on progress
+        const doomProgress = this.doomCounter / this.doomThreshold;
+        const newStage = Math.min(8, Math.floor(doomProgress * 8) + 1);
+        if (newStage !== this.currentStage) {
+            this.currentStage = newStage;
+            this.updateStorylineVisuals();
+        }
         
         // Update furnaces
         let avgHeat = 0;
@@ -439,6 +447,13 @@ class TitanicSimulator {
         this.ship.heading = (angle * 180 / Math.PI + 90 + 360) % 360; // Update heading
         
         this.distanceTraveled += distanceKm * 0.54; // to nautical miles
+        
+        // Check if reached New York
+        const distToNY = this.distance(this.ship.lat, this.ship.lon, this.endPos.lat, this.endPos.lon);
+        if (distToNY < 0.5 && !this.gameOver) {
+            this.victory();
+            return;
+        }
         
         // Check iceberg collisions
         for (let iceberg of this.icebergs) {
@@ -771,6 +786,23 @@ class TitanicSimulator {
             sinkEl.textContent = 'STABLE';
             sinkEl.className = 'status-value';
         }
+        
+        // Enhanced UI updates
+        const moraleEl = document.getElementById('morale');
+        if (moraleEl) moraleEl.textContent = this.crew.morale.toFixed(0) + '%';
+        
+        const weatherEl = document.getElementById('weather');
+        if (weatherEl) weatherEl.textContent = this.weather.condition;
+        
+        const repairsEl = document.getElementById('repairs');
+        if (repairsEl) repairsEl.textContent = this.repairKits;
+        
+        // Update captain portrait periodically
+        if (!this.lastPortraitUpdate) this.lastPortraitUpdate = -1;
+        if (Math.floor(this.gameTime) % 5 === 0 && Math.floor(this.gameTime) !== this.lastPortraitUpdate) {
+            this.lastPortraitUpdate = Math.floor(this.gameTime);
+            this.updateCaptainPortrait();
+        }
     }
     
     changeSpeed(delta) {
@@ -799,11 +831,65 @@ class TitanicSimulator {
         if (this.gameOver) return;
         
         this.gameOver = true;
+        this.synth.sink();
         this.log("═══════════════════════════════", "critical");
         this.log("VESSEL LOST - ALL HANDS ABANDON SHIP", "critical");
         this.log("═══════════════════════════════", "critical");
         
+        // Show defeat image
+        const endingImg = document.getElementById('endingImage');
+        const gameOverTitle = document.getElementById('gameOverTitle');
+        if (endingImg) {
+            const defeatImages = ['defeat_01_sinking.png', 'defeat_02_lifeboats.png', 'defeat_03_memorial.png', 'defeat_04_underwater.png'];
+            const randomDefeat = defeatImages[Math.floor(Math.random() * defeatImages.length)];
+            endingImg.src = `game_images/${randomDefeat}`;
+            endingImg.style.display = 'block';
+            endingImg.onerror = () => { endingImg.style.display = 'none'; };
+        }
+        if (gameOverTitle) {
+            gameOverTitle.textContent = '⚓ VESSEL LOST ⚓';
+        }
+        
+        this.updateCaptainPortrait();
+        document.getElementById('gameOver').style.display = 'block';
         document.getElementById('sinkReason').textContent = reason;
+        document.getElementById('finalTime').textContent = document.getElementById('timeElapsed').textContent;
+        document.getElementById('finalDistance').textContent = `${Math.round(this.distanceTraveled)} nm`;
+        document.getElementById('icebergsAvoided').textContent = this.icebergsAvoided;
+        document.getElementById('coalUsed').textContent = `${Math.round(100 - this.coal)} tons`;
+        document.getElementById('gameOver').style.display = 'block';
+    }
+    
+    victory() {
+        if (this.gameOver) return;
+        
+        this.gameOver = true;
+        this.synth.sink(); // Play success sound
+        this.log("═══════════════════════════════", "good");
+        this.log("🎉 IMPOSSIBLE VICTORY - NEW YORK REACHED!", "good");
+        this.log("═══════════════════════════════", "good");
+        
+        // Show victory image
+        const endingImg = document.getElementById('endingImage');
+        const gameOverTitle = document.getElementById('gameOverTitle');
+        if (endingImg) {
+            const victoryImages = ['victory_01_harbor.png', 'victory_02_celebration.png', 'victory_03_newspaper.png'];
+            const randomVictory = victoryImages[Math.floor(Math.random() * victoryImages.length)];
+            endingImg.src = `game_images/${randomVictory}`;
+            endingImg.style.display = 'block';
+            endingImg.onerror = () => { endingImg.style.display = 'none'; };
+        }
+        if (gameOverTitle) {
+            gameOverTitle.textContent = '🎉 IMPOSSIBLE VICTORY! 🎉';
+            gameOverTitle.style.color = '#4ade80';
+        }
+        
+        this.updateCaptainPortrait();
+        
+        const sinkReason = document.getElementById('sinkReason');
+        sinkReason.textContent = 'Against all odds, the vessel reached New York Harbor safely!';
+        sinkReason.style.color = '#4ade80';
+        
         document.getElementById('finalTime').textContent = document.getElementById('timeElapsed').textContent;
         document.getElementById('finalDistance').textContent = `${Math.round(this.distanceTraveled)} nm`;
         document.getElementById('icebergsAvoided').textContent = this.icebergsAvoided;
