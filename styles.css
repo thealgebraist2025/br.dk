@@ -269,6 +269,13 @@ body {
     justify-content: center;
     color: white;
     font-size: 4rem;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+    text-decoration: none;
+}
+
+.featured-image:hover {
+    opacity: 0.9;
 }
 
 .featured-text {
@@ -379,6 +386,13 @@ body {
     justify-content: center;
     color: white;
     font-size: 3rem;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+    text-decoration: none;
+}
+
+.card-image:hover {
+    opacity: 0.9;
 }
 
 .card-content {
@@ -457,6 +471,14 @@ body {
     justify-content: center;
     color: white;
     font-size: 2rem;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.story-icon:hover {
+    opacity: 0.9;
 }
 
 .story-details h3 {

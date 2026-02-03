@@ -54,8 +54,8 @@ function renderArticle() {
             </div>
         </header>
         
-        <div class="article-image" style="background: ${window.getRandomGradient()}">
-            <span>${story.icon}</span>
+        <div class="article-image" style="background-image: url('${story.image}'); background-size: cover; background-position: center;">
+            <span style="display: none;">${story.icon}</span>
         </div>
         
         <div class="article-body">
@@ -94,9 +94,9 @@ function renderRelatedStories(currentId, category) {
         const row = document.createElement('article');
         row.className = 'story-row';
         row.innerHTML = `
-            <div class="story-icon" style="background: ${window.getRandomGradient()}">
-                ${story.icon}
-            </div>
+            <a href="article.html?id=${story.id}" class="story-icon" style="background-image: url('${story.image}'); background-size: cover; background-position: center;">
+                <span style="display: none;">${story.icon}</span>
+            </a>
             <div class="story-details">
                 <h3><a href="article.html?id=${story.id}">${story.title}</a></h3>
                 <p>${story.excerpt}</p>
