@@ -62,6 +62,11 @@ class TitanicSimulator {
         const furnaceRect = this.furnaceCanvas.getBoundingClientRect();
         this.furnaceCanvas.width = furnaceRect.width;
         this.furnaceCanvas.height = furnaceRect.height;
+        
+        // Re-render after resize
+        if (this.ship) {
+            this.render();
+        }
     }
     
     initFurnaces() {
@@ -136,7 +141,7 @@ class TitanicSimulator {
             if (Math.sqrt(dx*dx + dy*dy) < 40) {
                 if (this.coal > 0) {
                     furnace.heat = Math.min(100, furnace.heat + 25);
-                    this.coal -= 0.5;
+                    this.coal -= 0.2; // Reduced coal cost per click
                     // Sound would go here
                 }
                 break;
@@ -169,8 +174,8 @@ class TitanicSimulator {
         const targetSpeed = (this.furnaceTemp / 100) * this.ship.maxSpeed;
         this.ship.speed += (targetSpeed - this.ship.speed) * 0.1;
         
-        // Consume coal based on speed
-        this.coal = Math.max(0, this.coal - (this.ship.speed / this.ship.maxSpeed) * 0.02);
+        // Consume coal based on speed (reduced consumption)
+        this.coal = Math.max(0, this.coal - (this.ship.speed / this.ship.maxSpeed) * 0.005);
         
         // Move ship
         const speedKmH = this.ship.speed * 1.852; // knots to km/h
@@ -375,11 +380,17 @@ class TitanicSimulator {
         ctx.fillStyle = '#1a0a00';
         ctx.fillRect(0, 0, w, h);
         
+        // Title text
+        ctx.fillStyle = '#ff8800';
+        ctx.font = 'bold 14px Courier New';
+        ctx.textAlign = 'center';
+        ctx.fillText('CLICK FURNACES TO SHOVEL COAL', w/2, 20);
+        
         // Draw furnaces
         for (let i = 0; i < this.furnaces.length; i++) {
             const furnace = this.furnaces[i];
             const x = (i % 3) * (w / 3) + (w / 6);
-            const y = Math.floor(i / 3) * (h / 2) + (h / 4);
+            const y = Math.floor(i / 3) * (h / 2.5) + (h / 3);
             
             furnace.x = x;
             furnace.y = y;

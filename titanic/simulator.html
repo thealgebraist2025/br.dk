@@ -74,20 +74,24 @@
 
         #mapCanvas {
             width: 100%;
-            height: 400px;
+            height: 100%;
+            min-height: 400px;
             background: #001a33;
             border: 2px solid rgba(74, 158, 255, 0.5);
             border-radius: 4px;
             cursor: crosshair;
+            display: block;
         }
 
         #furnaceCanvas {
             width: 100%;
-            height: 200px;
+            height: 100%;
+            min-height: 200px;
             background: #1a0a00;
             border: 2px solid rgba(255, 100, 0, 0.5);
             border-radius: 4px;
             cursor: pointer;
+            display: block;
         }
 
         .status-item {
@@ -236,12 +240,9 @@
             </div>
 
             <!-- Furnace Control -->
-            <div class="panel">
+            <div class="panel" style="flex: 0 0 280px;">
                 <h2>FURNACE CONTROL - BOILER ROOM #6</h2>
                 <canvas id="furnaceCanvas"></canvas>
-                <p style="text-align: center; margin-top: 0.5rem; font-size: 0.85rem; color: #a8dadc;">
-                    CLICK FURNACES TO ADD COAL • MAINTAIN OPTIMAL HEAT
-                </p>
             </div>
         </div>
 
