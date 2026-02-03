@@ -73,6 +73,11 @@ class TitanicSimulator {
         this.furnaceCanvas.width = furnaceRect.width;
         this.furnaceCanvas.height = furnaceRect.height;
         
+        // Debug: ensure canvases have size
+        if (this.mapCanvas.width === 0 || this.mapCanvas.height === 0) {
+            setTimeout(() => this.resizeCanvases(), 100);
+        }
+    }
         // Re-render after resize
         if (this.ship) {
             this.render();
