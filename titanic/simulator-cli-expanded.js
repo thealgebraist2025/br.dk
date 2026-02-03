@@ -342,8 +342,8 @@ class TitanicCLIExpanded {
         this.coal = Math.max(0, this.coal - coalRate);
         this.coalConsumed += coalRate;
         
-        // Move ship (weather affects speed)
-        const speedMultiplier = 30 * (this.weather.visibility / 100);
+        // Move ship - 60x accelerated for ~3-5 minute journey (weather affects speed)
+        const speedMultiplier = 60 * (this.weather.visibility / 100);
         const speedKmH = this.ship.speed * 1.852 * speedMultiplier;
         const distanceKm = speedKmH * deltaTime / 3600;
         const distanceDegrees = distanceKm / 111;

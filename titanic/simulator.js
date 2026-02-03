@@ -428,9 +428,10 @@ class TitanicSimulator {
         const coalRate = this.difficulty.coalRate * (this.ship.speed / this.ship.maxSpeed);
         this.coal = Math.max(0, this.coal - coalRate);
         
-        // Move ship - accelerated to complete journey in ~5 minutes
+        // Move ship - accelerated to complete journey in ~3-5 minutes with good coal management
+        // 60x multiplier allows: 3.2 min (calm weather) to 6.4 min (fog/storm)
         // Weather affects speed
-        const speedMultiplier = 30 * (this.weather.visibility / 100);
+        const speedMultiplier = 60 * (this.weather.visibility / 100);
         const speedKmH = this.ship.speed * 1.852 * speedMultiplier;
         const distanceKm = speedKmH * deltaTime / 3600;
         const distanceDegrees = distanceKm / 111; // rough km to degrees

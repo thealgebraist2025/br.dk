@@ -158,8 +158,8 @@ class TitanicCLI {
         // Consume coal
         this.coal = Math.max(0, this.coal - (this.ship.speed / this.ship.maxSpeed) * 0.005);
         
-        // Move ship
-        const speedMultiplier = 30;
+        // Move ship - 60x accelerated for ~3-5 minute journey with good coal management
+        const speedMultiplier = 60;
         const speedKmH = this.ship.speed * 1.852 * speedMultiplier;
         const distanceKm = speedKmH * deltaTime / 3600;
         const distanceDegrees = distanceKm / 111;
