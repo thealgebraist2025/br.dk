@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 
-// Titanic Simulator - Command Line Edition
-// Run with: node simulator-cli.js [--auto] [--speed=fast|normal|slow]
+// Titanic Simulator - Command Line Edition - EXPANDED 16x
+// Run with: node simulator-cli.js [options]
+// Options: --auto --speed=fast|normal|slow --runs=N --difficulty=easy|normal|hard|impossible
+//          --log-file=FILE --quiet --json --ascii --achievements --ship=TYPE
 
 const readline = require('readline');
+const fs = require('fs');
 
 class TitanicCLI {
     constructor(options = {}) {

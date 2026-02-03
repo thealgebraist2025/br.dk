@@ -146,10 +146,12 @@
             background: rgba(0, 0, 0, 0.5);
             border-radius: 4px;
             padding: 0.75rem;
-            height: 200px;
+            min-height: 200px;
+            max-height: 400px;
             overflow-y: auto;
             font-size: 0.85rem;
             font-family: 'Courier New', monospace;
+            flex: 1;
         }
 
         .log-entry {
@@ -297,6 +299,18 @@
                     <span class="status-label">Sinking Status:</span>
                     <span class="status-value" id="sinkStatus">STABLE</span>
                 </div>
+                <div class="status-item">
+                    <span class="status-label">Crew Morale:</span>
+                    <span class="status-value" id="morale">100%</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Weather:</span>
+                    <span class="status-value" id="weather">calm</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Repair Kits:</span>
+                    <span class="status-value" id="repairs">3</span>
+                </div>
             </div>
 
             <!-- Controls -->
@@ -307,18 +321,21 @@
                     <button onclick="game.changeSpeed(-5)">↓ SLOWER</button>
                     <button onclick="game.turnLeft()">← PORT</button>
                     <button onclick="game.turnRight()">→ STARBOARD</button>
+                    <button onclick="game.repair()">🔧 REPAIR (R)</button>
+                    <button onclick="game.boostMorale()">📣 MORALE (M)</button>
                     <button onclick="game.emergencyStop()">⚠ EMERGENCY STOP</button>
                     <button onclick="game.restart()">⟲ RESTART</button>
+                </div>
+                <div style="margin-top: 0.5rem; font-size: 0.75rem; color: #cbd5e0;">
+                    SPACE: Shovel Coal | R: Repair | M: Boost Morale
                 </div>
             </div>
 
             <!-- Event Log -->
-            <div class="panel" style="flex: 1;">
+            <div class="panel" style="flex: 1; min-height: 250px;">
                 <h2>EVENT LOG</h2>
                 <div class="log" id="eventLog">
-                    <div class="log-entry">SYSTEM INITIALIZED</div>
-                    <div class="log-entry">VESSEL READY FOR DEPARTURE</div>
-                    <div class="log-entry">AWAITING CAPTAIN'S ORDERS</div>
+                    <!-- Events will appear here -->
                 </div>
             </div>
         </div>

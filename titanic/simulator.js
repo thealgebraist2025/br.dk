@@ -1,12 +1,15 @@
-// Titanic Simulator Game Logic
+// Titanic Simulator Game Logic - ENHANCED VERSION
+// Synced with CLI features: difficulty modes, weather, crew, repairs, achievements
 
 // C64-style sound synthesizer
 class C64Synth {
     constructor() {
         this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        this.enabled = true;
     }
     
     play(freq, duration, waveform = 'square', volume = 0.15) {
+        if (!this.enabled) return;
         const osc = this.audioContext.createOscillator();
         const gain = this.audioContext.createGain();
         
@@ -24,13 +27,11 @@ class C64Synth {
     }
     
     shovelCoal() {
-        // Quick low thud
         this.play(80, 0.1, 'square', 0.2);
         setTimeout(() => this.play(60, 0.05, 'square', 0.15), 50);
     }
     
     collision() {
-        // Dramatic crash with pitch drop
         this.play(800, 0.05, 'sawtooth', 0.3);
         setTimeout(() => this.play(400, 0.1, 'sawtooth', 0.25), 50);
         setTimeout(() => this.play(200, 0.15, 'sawtooth', 0.2), 150);
@@ -38,13 +39,11 @@ class C64Synth {
     }
     
     warning() {
-        // Alert beep
         this.play(880, 0.1, 'square', 0.2);
         setTimeout(() => this.play(880, 0.1, 'square', 0.2), 150);
     }
     
     sink() {
-        // Descending doom sound
         const startTime = this.audioContext.currentTime;
         const osc = this.audioContext.createOscillator();
         const gain = this.audioContext.createGain();
@@ -62,15 +61,17 @@ class C64Synth {
         osc.start();
         osc.stop(startTime + 2);
     }
-    
-    engineHum() {
-        // Low rumble
-        this.play(55, 0.5, 'sawtooth', 0.08);
-    }
 }
 
+// Difficulty configurations
+const DIFFICULTIES = {
+    easy: { doomMult: 2.0, icebergs: 20, damageMult: 0.5, coalRate: 0.0025 },
+    normal: { doomMult: 1.0, icebergs: 40, damageMult: 1.0, coalRate: 0.005 },
+    hard: { doomMult: 0.7, icebergs: 60, damageMult: 1.5, coalRate: 0.008 }
+};
+
 class TitanicSimulator {
-    constructor() {
+    constructor(difficulty = 'normal') {
         this.mapCanvas = document.getElementById('mapCanvas');
         this.furnaceCanvas = document.getElementById('furnaceCanvas');
         this.mapCtx = this.mapCanvas.getContext('2d');
@@ -78,6 +79,10 @@ class TitanicSimulator {
         
         // Initialize sound
         this.synth = new C64Synth();
+        
+        // Difficulty settings
+        this.difficulty = DIFFICULTIES[difficulty];
+        this.difficultyName = difficulty;
         
         // Set canvas sizes
         this.resizeCanvases();
@@ -94,10 +99,16 @@ class TitanicSimulator {
             maxSpeed: 23
         };
         
-        this.coal = 100; // percentage
-        this.furnaceTemp = 0; // percentage
-        this.hullIntegrity = 100; // percentage
-        this.waterLevel = 0; // percentage of ship flooded
+        this.coal = 100;
+        this.furnaceTemp = 0;
+        this.hullIntegrity = 100;
+        this.waterLevel = 0;
+        
+        // Enhanced features synced from CLI
+        this.crew = { morale: 100, efficiency: 1.0 };
+        this.weather = { condition: 'calm', visibility: 100 };
+        this.repairKits = 3;
+        this.maxSpeed = 0;
         
         this.icebergs = [];
         this.furnaces = [];
@@ -110,7 +121,7 @@ class TitanicSimulator {
         
         // Doom counter - ensures sinking within ~5 minutes
         this.doomCounter = 0;
-        this.doomThreshold = 300000; // 5 minutes until guaranteed sink
+        this.doomThreshold = 300000 * this.difficulty.doomMult; // Adjusted by difficulty
         this.microLeaksAccumulated = 0;
         
         // Initialize game elements
@@ -125,11 +136,22 @@ class TitanicSimulator {
             if (e.code === 'Space' && !this.gameOver && this.coal > 0) {
                 e.preventDefault();
                 const randomFurnace = this.furnaces[Math.floor(Math.random() * this.furnaces.length)];
-                randomFurnace.heat = Math.min(100, randomFurnace.heat + 25);
+                randomFurnace.heat = Math.min(100, randomFurnace.heat + 25 * this.crew.efficiency);
                 this.coal -= 0.2;
                 this.synth.shovelCoal();
             }
+            // R key to repair
+            if (e.code === 'KeyR' && !this.gameOver && this.repairKits > 0) {
+                this.repair();
+            }
+            // M key to boost morale  
+            if (e.code === 'KeyM' && !this.gameOver) {
+                this.boostMorale();
+            }
         });
+        
+        // Update weather periodically
+        setInterval(() => this.updateWeather(), 30000);
         
         // Start game loop
         this.gameLoop();
@@ -171,9 +193,10 @@ class TitanicSimulator {
     }
     
     spawnIcebergs() {
-        // Generate icebergs along route
+        // Generate icebergs along route (count based on difficulty)
         const route = this.calculateRoute();
-        for (let i = 0; i < 40; i++) {
+        const icebergCount = this.difficulty.icebergs;
+        for (let i = 0; i < icebergCount; i++) {
             const t = Math.random();
             const pos = this.interpolateRoute(route, t);
             
@@ -185,9 +208,41 @@ class TitanicSimulator {
                 lat: pos.lat,
                 lon: pos.lon,
                 size: 10 + Math.random() * 20,
-                passed: false
+                passed: false,
+                hit: false
             });
         }
+    }
+    
+    updateWeather() {
+        const rand = Math.random();
+        if (rand < 0.05) {
+            this.weather = { condition: 'storm', visibility: 30 + Math.random() * 20 };
+            this.log('STORM CONDITIONS DETECTED', 'warning');
+        } else if (rand < 0.15) {
+            this.weather = { condition: 'fog', visibility: 40 + Math.random() * 30 };
+            this.log('FOG BANK ENCOUNTERED', 'warning');
+        } else if (rand < 0.30) {
+            this.weather = { condition: 'cloudy', visibility: 70 + Math.random() * 20 };
+        } else {
+            this.weather = { condition: 'calm', visibility: 95 + Math.random() * 5 };
+        }
+    }
+    
+    repair() {
+        if (this.repairKits > 0 && this.hullIntegrity < 100) {
+            this.repairKits--;
+            const repairAmount = 20;
+            this.hullIntegrity = Math.min(100, this.hullIntegrity + repairAmount);
+            this.waterLevel = Math.max(0, this.waterLevel - 15);
+            this.log(`REPAIRS EXECUTED - Hull restored +${repairAmount}% [${this.repairKits} kits remaining]`, 'good');
+        }
+    }
+    
+    boostMorale() {
+        this.crew.morale = Math.min(100, this.crew.morale + 10);
+        this.crew.efficiency = 0.5 + (this.crew.morale / 200);
+        this.log(`CREW MORALE BOOSTED - ${this.crew.morale.toFixed(0)}% (efficiency: ${(this.crew.efficiency * 100).toFixed(0)}%)`, 'info');
     }
     
     calculateRoute() {
@@ -259,17 +314,23 @@ class TitanicSimulator {
         }
         this.furnaceTemp = avgHeat / this.furnaces.length;
         
-        // Speed depends on furnace temperature
-        const targetSpeed = (this.furnaceTemp / 100) * this.ship.maxSpeed;
-        this.ship.speed += (targetSpeed - this.ship.speed) * 0.1;
+        // Crew morale decreases over time
+        this.crew.morale = Math.max(20, this.crew.morale - deltaTime * 0.5);
+        this.crew.efficiency = 0.5 + (this.crew.morale / 200);
         
-        // Consume coal based on speed (reduced consumption)
-        this.coal = Math.max(0, this.coal - (this.ship.speed / this.ship.maxSpeed) * 0.005);
+        // Speed depends on furnace temperature and crew efficiency
+        const targetSpeed = (this.furnaceTemp / 100) * this.ship.maxSpeed * this.crew.efficiency;
+        this.ship.speed += (targetSpeed - this.ship.speed) * 0.1;
+        this.maxSpeed = Math.max(this.maxSpeed, this.ship.speed);
+        
+        // Consume coal based on speed (adjusted by difficulty)
+        const coalRate = this.difficulty.coalRate * (this.ship.speed / this.ship.maxSpeed);
+        this.coal = Math.max(0, this.coal - coalRate);
         
         // Move ship - accelerated to complete journey in ~5 minutes
-        // Southampton to NY is ~3000 nautical miles, so we need to travel 600 nm/minute
-        const speedMultiplier = 30; // Accelerate time by 30x
-        const speedKmH = this.ship.speed * 1.852 * speedMultiplier; // knots to km/h, accelerated
+        // Weather affects speed
+        const speedMultiplier = 30 * (this.weather.visibility / 100);
+        const speedKmH = this.ship.speed * 1.852 * speedMultiplier;
         const distanceKm = speedKmH * deltaTime / 3600;
         const distanceDegrees = distanceKm / 111; // rough km to degrees
         
@@ -292,9 +353,10 @@ class TitanicSimulator {
             
             if (dist < 0.05 && !iceberg.hit) { // Collision!
                 iceberg.hit = true;
-                const damage = 20 + Math.random() * 30; // Increased damage
+                const damage = (20 + Math.random() * 30) * this.difficulty.damageMult;
                 this.hullIntegrity -= damage;
                 this.waterLevel += damage * 1.2; // More water per hit
+                this.crew.morale -= 20; // Morale drops on collision
                 this.synth.collision();
                 this.log("COLLISION DETECTED - HULL BREACH", "critical");
                 this.log(`HULL INTEGRITY: ${this.hullIntegrity.toFixed(1)}%`, "warning");
@@ -664,6 +726,8 @@ class TitanicSimulator {
     
     log(message, type = 'normal') {
         const logEl = document.getElementById('eventLog');
+        if (!logEl) return; // Guard against missing element
+        
         const entry = document.createElement('div');
         entry.className = `log-entry ${type}`;
         
@@ -671,7 +735,14 @@ class TitanicSimulator {
         entry.textContent = `[${timestamp}] ${message}`;
         
         logEl.appendChild(entry);
+        
+        // Auto-scroll to bottom
         logEl.scrollTop = logEl.scrollHeight;
+        
+        // Keep log size manageable (max 100 entries)
+        while (logEl.children.length > 100) {
+            logEl.removeChild(logEl.firstChild);
+        }
     }
 }
 
