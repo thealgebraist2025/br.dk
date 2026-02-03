@@ -1,0 +1,552 @@
+// Titanic Simulator Game Logic
+
+class TitanicSimulator {
+    constructor() {
+        this.mapCanvas = document.getElementById('mapCanvas');
+        this.furnaceCanvas = document.getElementById('furnaceCanvas');
+        this.mapCtx = this.mapCanvas.getContext('2d');
+        this.furnaceCtx = this.furnaceCanvas.getContext('2d');
+        
+        // Set canvas sizes
+        this.resizeCanvases();
+        window.addEventListener('resize', () => this.resizeCanvases());
+        
+        // Game state
+        this.startPos = { lat: 50.9, lon: -1.4 }; // Southampton
+        this.endPos = { lat: 40.7, lon: -74.0 }; // New York
+        this.ship = {
+            lat: this.startPos.lat,
+            lon: this.startPos.lon,
+            speed: 0, // knots
+            heading: 270, // degrees (west)
+            maxSpeed: 23
+        };
+        
+        this.coal = 100; // percentage
+        this.furnaceTemp = 0; // percentage
+        this.hullIntegrity = 100; // percentage
+        this.waterLevel = 0; // percentage of ship flooded
+        
+        this.icebergs = [];
+        this.furnaces = [];
+        this.startTime = Date.now();
+        this.gameTime = 0;
+        this.gameOver = false;
+        this.icebergsAvoided = 0;
+        this.distanceTraveled = 0;
+        
+        // Doom counter - ensures sinking is inevitable
+        this.doomCounter = 0;
+        this.doomThreshold = 180000; // 3 minutes until guaranteed sink
+        this.microLeaksAccumulated = 0;
+        
+        // Initialize game elements
+        this.initFurnaces();
+        this.spawnIcebergs();
+        
+        // Event listeners
+        this.furnaceCanvas.addEventListener('click', (e) => this.handleFurnaceClick(e));
+        
+        // Start game loop
+        this.gameLoop();
+        
+        this.log("DEPARTURE AUTHORIZED - DESTINATION: NEW YORK");
+        this.log("WARNING: ICEBERG REPORTS IN NORTH ATLANTIC");
+    }
+    
+    resizeCanvases() {
+        const mapRect = this.mapCanvas.getBoundingClientRect();
+        this.mapCanvas.width = mapRect.width;
+        this.mapCanvas.height = mapRect.height;
+        
+        const furnaceRect = this.furnaceCanvas.getBoundingClientRect();
+        this.furnaceCanvas.width = furnaceRect.width;
+        this.furnaceCanvas.height = furnaceRect.height;
+    }
+    
+    initFurnaces() {
+        // 6 furnaces to manage
+        for (let i = 0; i < 6; i++) {
+            this.furnaces.push({
+                heat: 50 + Math.random() * 30,
+                coolRate: 0.5 + Math.random() * 0.3,
+                x: (i % 3) * (this.furnaceCanvas.width / 3) + 50,
+                y: Math.floor(i / 3) * 90 + 40
+            });
+        }
+    }
+    
+    spawnIcebergs() {
+        // Generate icebergs along route
+        const route = this.calculateRoute();
+        for (let i = 0; i < 40; i++) {
+            const t = Math.random();
+            const pos = this.interpolateRoute(route, t);
+            
+            // Add some randomness to position
+            pos.lat += (Math.random() - 0.5) * 8;
+            pos.lon += (Math.random() - 0.5) * 8;
+            
+            this.icebergs.push({
+                lat: pos.lat,
+                lon: pos.lon,
+                size: 10 + Math.random() * 20,
+                passed: false
+            });
+        }
+    }
+    
+    calculateRoute() {
+        // Great circle route approximation
+        return [
+            { lat: 50.9, lon: -1.4 },   // Southampton
+            { lat: 50.5, lon: -10.0 },  // South of Ireland
+            { lat: 48.0, lon: -25.0 },  // Mid Atlantic
+            { lat: 43.0, lon: -45.0 },  // Iceberg alley
+            { lat: 41.7, lon: -50.0 },  // Fatal position
+            { lat: 40.7, lon: -74.0 }   // New York
+        ];
+    }
+    
+    interpolateRoute(route, t) {
+        const segmentCount = route.length - 1;
+        const segment = Math.min(Math.floor(t * segmentCount), segmentCount - 1);
+        const localT = (t * segmentCount) - segment;
+        
+        const start = route[segment];
+        const end = route[segment + 1];
+        
+        return {
+            lat: start.lat + (end.lat - start.lat) * localT,
+            lon: start.lon + (end.lon - start.lon) * localT
+        };
+    }
+    
+    handleFurnaceClick(e) {
+        if (this.gameOver) return;
+        
+        const rect = this.furnaceCanvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        // Check which furnace was clicked
+        for (let furnace of this.furnaces) {
+            const dx = x - furnace.x;
+            const dy = y - furnace.y;
+            if (Math.sqrt(dx*dx + dy*dy) < 40) {
+                if (this.coal > 0) {
+                    furnace.heat = Math.min(100, furnace.heat + 25);
+                    this.coal -= 0.5;
+                    // Sound would go here
+                }
+                break;
+            }
+        }
+    }
+    
+    gameLoop() {
+        if (!this.gameOver) {
+            this.update();
+            this.render();
+            requestAnimationFrame(() => this.gameLoop());
+        }
+    }
+    
+    update() {
+        const deltaTime = 1/60; // 60 FPS
+        this.gameTime += deltaTime;
+        this.doomCounter += deltaTime * 1000; // milliseconds
+        
+        // Update furnaces
+        let avgHeat = 0;
+        for (let furnace of this.furnaces) {
+            furnace.heat = Math.max(0, furnace.heat - furnace.coolRate * deltaTime * 60);
+            avgHeat += furnace.heat;
+        }
+        this.furnaceTemp = avgHeat / this.furnaces.length;
+        
+        // Speed depends on furnace temperature
+        const targetSpeed = (this.furnaceTemp / 100) * this.ship.maxSpeed;
+        this.ship.speed += (targetSpeed - this.ship.speed) * 0.1;
+        
+        // Consume coal based on speed
+        this.coal = Math.max(0, this.coal - (this.ship.speed / this.ship.maxSpeed) * 0.02);
+        
+        // Move ship
+        const speedKmH = this.ship.speed * 1.852; // knots to km/h
+        const distanceKm = speedKmH * deltaTime / 3600;
+        const distanceDegrees = distanceKm / 111; // rough km to degrees
+        
+        this.ship.lat += Math.sin(this.ship.heading * Math.PI / 180) * distanceDegrees;
+        this.ship.lon += Math.cos(this.ship.heading * Math.PI / 180) * distanceDegrees;
+        
+        this.distanceTraveled += distanceKm * 0.54; // to nautical miles
+        
+        // Check iceberg collisions
+        for (let iceberg of this.icebergs) {
+            const dist = this.distance(this.ship.lat, this.ship.lon, iceberg.lat, iceberg.lon);
+            
+            if (dist < 0.05 && !iceberg.hit) { // Collision!
+                iceberg.hit = true;
+                const damage = 15 + Math.random() * 25;
+                this.hullIntegrity -= damage;
+                this.waterLevel += damage * 0.8;
+                this.log("COLLISION DETECTED - HULL BREACH", "critical");
+                this.log(`HULL INTEGRITY: ${this.hullIntegrity.toFixed(1)}%`, "warning");
+                
+                if (this.hullIntegrity <= 0) {
+                    this.sink("Catastrophic hull failure following iceberg collision");
+                }
+            } else if (dist < 0.15 && !iceberg.passed && this.ship.speed > 5) {
+                // Close call
+                iceberg.passed = true;
+                this.icebergsAvoided++;
+            }
+        }
+        
+        // Inevitable doom mechanics
+        if (this.doomCounter > this.doomThreshold * 0.5) {
+            // Start micro-leaks that accumulate
+            this.microLeaksAccumulated += deltaTime * 0.02;
+            this.waterLevel += deltaTime * 0.03;
+            
+            if (this.doomCounter > this.doomThreshold * 0.7) {
+                this.hullIntegrity -= deltaTime * 0.1;
+            }
+        }
+        
+        // Random catastrophic failures as doom approaches
+        if (this.doomCounter > this.doomThreshold) {
+            if (Math.random() < 0.01) {
+                this.log("STRUCTURAL FAILURE DETECTED", "critical");
+                this.hullIntegrity -= 20;
+                this.waterLevel += 25;
+            }
+        }
+        
+        // Water accumulation causes sinking
+        if (this.waterLevel > 0) {
+            this.waterLevel += deltaTime * 0.05; // Water keeps coming in
+            this.hullIntegrity -= deltaTime * 0.02;
+        }
+        
+        // Check for sinking conditions
+        if (this.waterLevel >= 100) {
+            this.sink("Vessel fully flooded");
+        }
+        
+        if (this.hullIntegrity <= 0) {
+            this.sink("Total structural failure");
+        }
+        
+        if (this.coal <= 0 && this.furnaceTemp < 10) {
+            this.log("COAL DEPLETED - LOSS OF POWER IMMINENT", "warning");
+        }
+        
+        // Absolute doom failsafe - ship WILL sink eventually
+        if (this.doomCounter > this.doomThreshold * 1.5) {
+            this.sink("Inevitable structural fatigue and material failure. The vessel was doomed from departure.");
+        }
+        
+        this.updateUI();
+    }
+    
+    distance(lat1, lon1, lat2, lon2) {
+        // Simple Euclidean distance (good enough for game)
+        const dlat = lat2 - lat1;
+        const dlon = lon2 - lon1;
+        return Math.sqrt(dlat*dlat + dlon*dlon);
+    }
+    
+    render() {
+        this.renderMap();
+        this.renderFurnaces();
+    }
+    
+    renderMap() {
+        const ctx = this.mapCtx;
+        const w = this.mapCanvas.width;
+        const h = this.mapCanvas.height;
+        
+        // Clear
+        ctx.fillStyle = '#001a33';
+        ctx.fillRect(0, 0, w, h);
+        
+        // Convert lat/lon to canvas coordinates
+        const toX = (lon) => ((lon - (-74)) / ((-1.4) - (-74))) * w;
+        const toY = (lat) => ((50.9 - lat) / (50.9 - 40.7)) * h;
+        
+        // Draw route
+        const route = this.calculateRoute();
+        ctx.strokeStyle = 'rgba(74, 158, 255, 0.3)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(toX(route[0].lon), toY(route[0].lat));
+        for (let i = 1; i < route.length; i++) {
+            ctx.lineTo(toX(route[i].lon), toY(route[i].lat));
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        // Draw start and end
+        ctx.fillStyle = '#4a9eff';
+        ctx.beginPath();
+        ctx.arc(toX(this.startPos.lon), toY(this.startPos.lat), 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.font = '12px Courier New';
+        ctx.fillText('SOUTHAMPTON', toX(this.startPos.lon) + 12, toY(this.startPos.lat) + 4);
+        
+        ctx.fillStyle = '#4a9eff';
+        ctx.beginPath();
+        ctx.arc(toX(this.endPos.lon), toY(this.endPos.lat), 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.fillText('NEW YORK', toX(this.endPos.lon) - 70, toY(this.endPos.lat) + 4);
+        
+        // Draw icebergs
+        for (let iceberg of this.icebergs) {
+            const x = toX(iceberg.lon);
+            const y = toY(iceberg.lat);
+            
+            if (iceberg.hit) {
+                ctx.fillStyle = '#ff4444';
+            } else {
+                ctx.fillStyle = '#88ddff';
+            }
+            
+            ctx.beginPath();
+            ctx.arc(x, y, iceberg.size / 4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // Draw ship
+        const shipX = toX(this.ship.lon);
+        const shipY = toY(this.ship.lat);
+        
+        ctx.save();
+        ctx.translate(shipX, shipY);
+        ctx.rotate((this.ship.heading - 90) * Math.PI / 180);
+        
+        // Ship hull
+        if (this.hullIntegrity < 30) {
+            ctx.fillStyle = '#ff4444';
+        } else if (this.hullIntegrity < 60) {
+            ctx.fillStyle = '#ffaa00';
+        } else {
+            ctx.fillStyle = '#fff';
+        }
+        
+        ctx.beginPath();
+        ctx.moveTo(15, 0);
+        ctx.lineTo(-10, -8);
+        ctx.lineTo(-10, 8);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Wake if moving
+        if (this.ship.speed > 1) {
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-10, -3);
+            ctx.lineTo(-20, -6);
+            ctx.moveTo(-10, 3);
+            ctx.lineTo(-20, 6);
+            ctx.stroke();
+        }
+        
+        ctx.restore();
+        
+        // Draw sinking indicator if flooding
+        if (this.waterLevel > 0) {
+            ctx.fillStyle = `rgba(255, 68, 68, ${this.waterLevel / 200})`;
+            ctx.fillRect(0, h - (h * this.waterLevel / 100), w, h);
+        }
+    }
+    
+    renderFurnaces() {
+        const ctx = this.furnaceCtx;
+        const w = this.furnaceCanvas.width;
+        const h = this.furnaceCanvas.height;
+        
+        // Clear
+        ctx.fillStyle = '#1a0a00';
+        ctx.fillRect(0, 0, w, h);
+        
+        // Draw furnaces
+        for (let i = 0; i < this.furnaces.length; i++) {
+            const furnace = this.furnaces[i];
+            const x = (i % 3) * (w / 3) + (w / 6);
+            const y = Math.floor(i / 3) * (h / 2) + (h / 4);
+            
+            furnace.x = x;
+            furnace.y = y;
+            
+            // Furnace door
+            const heatRatio = furnace.heat / 100;
+            const glowIntensity = heatRatio * 255;
+            
+            ctx.fillStyle = `rgb(${glowIntensity}, ${glowIntensity * 0.3}, 0)`;
+            ctx.beginPath();
+            ctx.arc(x, y, 35, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Inner glow
+            ctx.fillStyle = `rgba(255, ${200 * heatRatio}, 0, ${heatRatio})`;
+            ctx.beginPath();
+            ctx.arc(x, y, 25, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Border
+            ctx.strokeStyle = '#444';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(x, y, 35, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Heat level text
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 12px Courier New';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${Math.round(furnace.heat)}%`, x, y + 5);
+            
+            // Furnace number
+            ctx.fillStyle = '#888';
+            ctx.font = '10px Courier New';
+            ctx.fillText(`#${i+1}`, x, y + 50);
+        }
+        
+        // Temperature warning
+        if (this.furnaceTemp < 30) {
+            ctx.fillStyle = '#ff4444';
+            ctx.font = 'bold 14px Courier New';
+            ctx.textAlign = 'center';
+            ctx.fillText('⚠ LOW TEMPERATURE - SPEED REDUCED', w/2, 15);
+        }
+    }
+    
+    updateUI() {
+        // Position
+        document.getElementById('position').textContent = 
+            `${Math.abs(this.ship.lat).toFixed(1)}°${this.ship.lat >= 0 ? 'N' : 'S'}, ${Math.abs(this.ship.lon).toFixed(1)}°${this.ship.lon <= 0 ? 'W' : 'E'}`;
+        
+        // Distance
+        const distToNY = this.distance(this.ship.lat, this.ship.lon, this.endPos.lat, this.endPos.lon) * 60; // rough nautical miles
+        document.getElementById('distance').textContent = `${Math.round(distToNY)} nm`;
+        
+        // Speed
+        const speedEl = document.getElementById('speed');
+        speedEl.textContent = `${this.ship.speed.toFixed(1)} kts`;
+        if (this.ship.speed < 5) speedEl.className = 'status-value warning';
+        else speedEl.className = 'status-value';
+        
+        // Coal
+        const coalEl = document.getElementById('coal');
+        coalEl.textContent = `${Math.round(this.coal)}%`;
+        if (this.coal < 20) coalEl.className = 'status-value critical';
+        else if (this.coal < 40) coalEl.className = 'status-value warning';
+        else coalEl.className = 'status-value';
+        
+        // Furnace temp
+        const tempEl = document.getElementById('furnaceTemp');
+        tempEl.textContent = `${Math.round(this.furnaceTemp)}%`;
+        if (this.furnaceTemp < 30) tempEl.className = 'status-value critical';
+        else if (this.furnaceTemp < 50) tempEl.className = 'status-value warning';
+        else tempEl.className = 'status-value';
+        
+        // Hull integrity
+        const hullEl = document.getElementById('hullIntegrity');
+        hullEl.textContent = `${Math.round(this.hullIntegrity)}%`;
+        if (this.hullIntegrity < 30) hullEl.className = 'status-value critical';
+        else if (this.hullIntegrity < 60) hullEl.className = 'status-value warning';
+        else hullEl.className = 'status-value';
+        
+        // Time
+        const elapsed = Math.floor(this.gameTime);
+        const hours = Math.floor(elapsed / 3600);
+        const minutes = Math.floor((elapsed % 3600) / 60);
+        const seconds = elapsed % 60;
+        document.getElementById('timeElapsed').textContent = 
+            `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Sink status
+        const sinkEl = document.getElementById('sinkStatus');
+        if (this.waterLevel > 70) {
+            sinkEl.textContent = 'SINKING RAPIDLY';
+            sinkEl.className = 'status-value critical';
+        } else if (this.waterLevel > 40) {
+            sinkEl.textContent = 'TAKING ON WATER';
+            sinkEl.className = 'status-value warning';
+        } else if (this.waterLevel > 10) {
+            sinkEl.textContent = 'MINOR FLOODING';
+            sinkEl.className = 'status-value warning';
+        } else if (this.hullIntegrity < 80) {
+            sinkEl.textContent = 'COMPROMISED';
+            sinkEl.className = 'status-value warning';
+        } else {
+            sinkEl.textContent = 'STABLE';
+            sinkEl.className = 'status-value';
+        }
+    }
+    
+    changeSpeed(delta) {
+        // Speed is controlled by furnace temp, this is more of a suggestion
+        this.log(`SPEED ADJUSTMENT REQUESTED: ${delta > 0 ? 'INCREASE' : 'DECREASE'}`);
+    }
+    
+    turnLeft() {
+        this.ship.heading = (this.ship.heading - 10 + 360) % 360;
+        this.log(`HELM: PORT TURN TO ${Math.round(this.ship.heading)}°`);
+    }
+    
+    turnRight() {
+        this.ship.heading = (this.ship.heading + 10) % 360;
+        this.log(`HELM: STARBOARD TURN TO ${Math.round(this.ship.heading)}°`);
+    }
+    
+    emergencyStop() {
+        this.log("EMERGENCY STOP INITIATED", "warning");
+        for (let furnace of this.furnaces) {
+            furnace.heat *= 0.5;
+        }
+    }
+    
+    sink(reason) {
+        if (this.gameOver) return;
+        
+        this.gameOver = true;
+        this.log("═══════════════════════════════", "critical");
+        this.log("VESSEL LOST - ALL HANDS ABANDON SHIP", "critical");
+        this.log("═══════════════════════════════", "critical");
+        
+        document.getElementById('sinkReason').textContent = reason;
+        document.getElementById('finalTime').textContent = document.getElementById('timeElapsed').textContent;
+        document.getElementById('finalDistance').textContent = `${Math.round(this.distanceTraveled)} nm`;
+        document.getElementById('icebergsAvoided').textContent = this.icebergsAvoided;
+        document.getElementById('coalUsed').textContent = `${Math.round(100 - this.coal)} tons`;
+        document.getElementById('gameOver').style.display = 'block';
+    }
+    
+    restart() {
+        document.getElementById('gameOver').style.display = 'none';
+        document.getElementById('eventLog').innerHTML = '';
+        game = new TitanicSimulator();
+    }
+    
+    log(message, type = 'normal') {
+        const logEl = document.getElementById('eventLog');
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        
+        const timestamp = new Date().toLocaleTimeString('en-GB', { hour12: false });
+        entry.textContent = `[${timestamp}] ${message}`;
+        
+        logEl.appendChild(entry);
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+}
+
+// Initialize game
+let game = new TitanicSimulator();

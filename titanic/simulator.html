@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RMS Titanic Navigation Simulator - Official Training Software</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a1929;
+            color: #e8f1f5;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a365d, #2c5282);
+            padding: 1rem;
+            border-bottom: 3px solid #4a9eff;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+
+        .header p {
+            font-size: 0.85rem;
+            color: #a8dadc;
+        }
+
+        .game-container {
+            display: flex;
+            height: calc(100vh - 80px);
+            padding: 1rem;
+            gap: 1rem;
+        }
+
+        .main-panel {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .side-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .panel {
+            background: linear-gradient(135deg, rgba(30, 58, 95, 0.6), rgba(15, 41, 66, 0.8));
+            border: 2px solid rgba(74, 158, 255, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .panel h2 {
+            font-size: 1rem;
+            color: #4a9eff;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(74, 158, 255, 0.3);
+            padding-bottom: 0.5rem;
+        }
+
+        #mapCanvas {
+            width: 100%;
+            height: 400px;
+            background: #001a33;
+            border: 2px solid rgba(74, 158, 255, 0.5);
+            border-radius: 4px;
+            cursor: crosshair;
+        }
+
+        #furnaceCanvas {
+            width: 100%;
+            height: 200px;
+            background: #1a0a00;
+            border: 2px solid rgba(255, 100, 0, 0.5);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .status-label {
+            color: #a8dadc;
+        }
+
+        .status-value {
+            color: #4a9eff;
+            font-weight: bold;
+        }
+
+        .warning {
+            color: #ff6b6b;
+        }
+
+        .critical {
+            color: #ff0000;
+            animation: blink 0.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+
+        .log {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            padding: 0.75rem;
+            height: 200px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .log-entry {
+            margin-bottom: 0.25rem;
+            color: #cbd5e0;
+        }
+
+        .log-entry.warning {
+            color: #ffaa00;
+        }
+
+        .log-entry.critical {
+            color: #ff4444;
+            font-weight: bold;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        button {
+            background: linear-gradient(135deg, #2c5282, #1a365d);
+            border: 2px solid #4a9eff;
+            color: #fff;
+            padding: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #3a6699, #2c5282);
+            border-color: #6bb6ff;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .game-over {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(10, 25, 41, 0.98), rgba(26, 54, 93, 0.98));
+            border: 3px solid #4a9eff;
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 0 50px rgba(74, 158, 255, 0.5);
+        }
+
+        .game-over h1 {
+            font-size: 2.5rem;
+            color: #ff4444;
+            margin-bottom: 1rem;
+        }
+
+        .game-over p {
+            font-size: 1.2rem;
+            color: #cbd5e0;
+            margin-bottom: 2rem;
+        }
+
+        .stats {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .stat-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>RMS TITANIC NAVIGATION SIMULATOR v1.0</h1>
+        <p>Official White Star Line Training System - Southampton to New York Route</p>
+    </div>
+
+    <div class="game-container">
+        <div class="main-panel">
+            <!-- Navigation Map -->
+            <div class="panel" style="flex: 1;">
+                <h2>NAVIGATION CHART - NORTH ATLANTIC</h2>
+                <canvas id="mapCanvas"></canvas>
+            </div>
+
+            <!-- Furnace Control -->
+            <div class="panel">
+                <h2>FURNACE CONTROL - BOILER ROOM #6</h2>
+                <canvas id="furnaceCanvas"></canvas>
+                <p style="text-align: center; margin-top: 0.5rem; font-size: 0.85rem; color: #a8dadc;">
+                    CLICK FURNACES TO ADD COAL • MAINTAIN OPTIMAL HEAT
+                </p>
+            </div>
+        </div>
+
+        <div class="side-panel">
+            <!-- Status Panel -->
+            <div class="panel">
+                <h2>VESSEL STATUS</h2>
+                <div class="status-item">
+                    <span class="status-label">Position:</span>
+                    <span class="status-value" id="position">00.0°N, 00.0°W</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Distance to NY:</span>
+                    <span class="status-value" id="distance">2800 nm</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Speed:</span>
+                    <span class="status-value" id="speed">0.0 kts</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Coal Reserve:</span>
+                    <span class="status-value" id="coal">100%</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Furnace Temp:</span>
+                    <span class="status-value" id="furnaceTemp">0%</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Hull Integrity:</span>
+                    <span class="status-value" id="hullIntegrity">100%</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Time Elapsed:</span>
+                    <span class="status-value" id="timeElapsed">0:00:00</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Sinking Status:</span>
+                    <span class="status-value" id="sinkStatus">STABLE</span>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="panel">
+                <h2>COMMANDS</h2>
+                <div class="controls">
+                    <button onclick="game.changeSpeed(5)">↑ FASTER</button>
+                    <button onclick="game.changeSpeed(-5)">↓ SLOWER</button>
+                    <button onclick="game.turnLeft()">← PORT</button>
+                    <button onclick="game.turnRight()">→ STARBOARD</button>
+                    <button onclick="game.emergencyStop()">⚠ EMERGENCY STOP</button>
+                    <button onclick="game.restart()">⟲ RESTART</button>
+                </div>
+            </div>
+
+            <!-- Event Log -->
+            <div class="panel" style="flex: 1;">
+                <h2>EVENT LOG</h2>
+                <div class="log" id="eventLog">
+                    <div class="log-entry">SYSTEM INITIALIZED</div>
+                    <div class="log-entry">VESSEL READY FOR DEPARTURE</div>
+                    <div class="log-entry">AWAITING CAPTAIN'S ORDERS</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div class="game-over" id="gameOver">
+        <h1>⚓ VESSEL LOST ⚓</h1>
+        <p id="sinkReason">The Titanic has sunk.</p>
+        <div class="stats">
+            <div class="stat-line">
+                <span>Time Survived:</span>
+                <span id="finalTime">0:00:00</span>
+            </div>
+            <div class="stat-line">
+                <span>Distance Traveled:</span>
+                <span id="finalDistance">0 nm</span>
+            </div>
+            <div class="stat-line">
+                <span>Icebergs Avoided:</span>
+                <span id="icebergsAvoided">0</span>
+            </div>
+            <div class="stat-line">
+                <span>Coal Consumed:</span>
+                <span id="coalUsed">0 tons</span>
+            </div>
+        </div>
+        <button onclick="game.restart()" style="font-size: 1.2rem; padding: 1rem 2rem;">TRY AGAIN (FUTILE)</button>
+        <p style="font-size: 0.85rem; margin-top: 1rem; color: #a8dadc;">
+            Note: The vessel is designed to sink. This is a feature, not a bug.
+        </p>
+    </div>
+
+    <script src="simulator.js"></script>
+</body>
+</html>
