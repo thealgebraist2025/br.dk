@@ -1219,3 +1219,121 @@ Final Position:     50.89°N, 1.45°W
 📍 STATUS: Speed 0.0kts | Coal 0% | Hull 93% | Distance to NY 5055nm
 
 📍 STATUS: Speed 0.0kts | Coal 0% | Hull 92% | Distance to NY 5055nm
+
+📍 STATUS: Speed 0.0kts | Coal 0% | Hull 91% | Distance to NY 5055nm
+
+📍 STATUS: Speed 0.0kts | Coal 0% | Hull 90% | Distance to NY 5055nm
+[03:00] 🔴 STRUCTURAL FAILURE DETECTED
+[03:02] 🔴 STRUCTURAL FAILURE DETECTED
+[03:04] 🔴 STRUCTURAL FAILURE DETECTED
+[03:04] 🔴 STRUCTURAL FAILURE DETECTED
+[03:04] 🔴 
+======================================================================
+[03:04] 🔴 ⚓ VESSEL LOST - Hull integrity failure
+[03:04] 🔴 ======================================================================
+
+
+📊 VOYAGE STATISTICS - RUN #2
+──────────────────────────────────────────────────────────────────────
+Time Survived:      03:04
+Distance Traveled:  3.0 nautical miles
+Icebergs Avoided:   0
+Coal Consumed:      98.6%
+Final Speed:        0.0 knots
+Hull Integrity:     -15.0%
+Water Level:        123.1%
+Final Position:     50.89°N, 1.45°W
+──────────────────────────────────────────────────────────────────────
+
+
+📊 VOYAGE STATISTICS - RUN #2
+──────────────────────────────────────────────────────────────────────
+Time Survived:      03:04
+Distance Traveled:  3.0 nautical miles
+Icebergs Avoided:   0
+Coal Consumed:      98.6%
+Final Speed:        0.0 knots
+Hull Integrity:     -15.0%
+Water Level:        123.1%
+Final Position:     50.89°N, 1.45°W
+──────────────────────────────────────────────────────────────────────
+
+[03:04] 🔴 
+======================================================================
+[03:04] 🔴 ⚓ VESSEL LOST - Complete flooding - vessel submerged
+[03:04] 🔴 ======================================================================
+
+
+📊 VOYAGE STATISTICS - RUN #2
+──────────────────────────────────────────────────────────────────────
+Time Survived:      03:04
+Distance Traveled:  3.0 nautical miles
+Icebergs Avoided:   0
+Coal Consumed:      98.6%
+Final Speed:        0.0 knots
+Hull Integrity:     -15.0%
+Water Level:        123.1%
+Final Position:     50.89°N, 1.45°W
+──────────────────────────────────────────────────────────────────────
+
+
+📊 VOYAGE STATISTICS - RUN #2
+──────────────────────────────────────────────────────────────────────
+Time Survived:      03:04
+Distance Traveled:  3.0 nautical miles
+Icebergs Avoided:   0
+Coal Consumed:      98.6%
+Final Speed:        0.0 knots
+Hull Integrity:     -15.0%
+Water Level:        123.1%
+Final Position:     50.89°N, 1.45°W
+──────────────────────────────────────────────────────────────────────
+
+
+══════════════════════════════════════════════════════════════════════
+  RMS TITANIC NAVIGATION SIMULATOR - COMMAND LINE EDITION
+  Run #3 | Mode: AUTO
+══════════════════════════════════════════════════════════════════════
+
+[00:00] ⚪ DEPARTURE AUTHORIZED - DESTINATION: NEW YORK
+[00:00] ⚪ WARNING: ICEBERG REPORTS IN NORTH ATLANTIC
+
+📍 STATUS: Speed 1.5kts | Coal 100% | Hull 100% | Distance to NY 5059nm
+[00:00] ⚪ COAL SHOVELED INTO FURNACE #5 [71% heat]
+[00:00] ⚪ COAL SHOVELED INTO FURNACE #4 [72% heat]
+[00:00] ⚪ COAL SHOVELED INTO FURNACE #1 [62% heat]
+[00:01] ⚪ COAL SHOVELED INTO FURNACE #5 [58% heat]
+[00:01] ⚪ COAL SHOVELED INTO FURNACE #5 [74% heat]
+[00:01] ⚪ COAL SHOVELED INTO FURNACE #1 [64% heat]
+[00:01] ⚪ COAL SHOVELED INTO FURNACE #3 [25% heat]
+[00:01] ⚪ COAL SHOVELED INTO FURNACE #4 [38% heat]
+[00:01] ⚪ COAL SHOVELED INTO FURNACE #4 [58% heat]
+[00:01] ⚪ COAL SHOVELED INTO FURNACE #6 [46% heat]
+[00:01] ⚪ COAL SHOVELED INTO FURNACE #3 [39% heat]
+[00:01] ⚪ COAL SHOVELED INTO FURNACE #2 [37% heat]
+[00:02] ⚪ COAL SHOVELED INTO FURNACE #4 [66% heat]
+[00:02] ⚪ COAL SHOVELED INTO FURNACE #1 [61% heat]
+[00:02] ⚪ COAL SHOVELED INTO FURNACE #6 [58% heat]
+[00:02] ⚪ COAL SHOVELED INTO FURNACE #6 [81% heat]
+[00:02] ⚪ COAL SHOVELED INTO FURNACE #1 [73% heat]
+[00:02] ⚪ COAL SHOVELED INTO FURNACE #2 [43% heat]
+[00:02] ⚪ COAL SHOVELED INTO FURNACE #4 [60% heat]
+[00:02] ⚪ COAL SHOVELED INTO FURNACE #3 [25% heat]
+[00:02] ⚪ COAL SHOVELED INTO FURNACE #4 [73% heat]
+[00:02] ⚪ COAL SHOVELED INTO FURNACE #6 [80% heat]
+[00:03] ⚪ COAL SHOVELED INTO FURNACE #3 [39% heat]
+[00:03] ⚪ COAL SHOVELED INTO FURNACE #4 [84% heat]
+[00:03] ⚪ COAL SHOVELED INTO FURNACE #2 [28% heat]
+[00:03] ⚪ COAL SHOVELED INTO FURNACE #5 [25% heat]
+[00:03] ⚪ COAL SHOVELED INTO FURNACE #5 [48% heat]
+[00:03] ⚪ COAL SHOVELED INTO FURNACE #4 [71% heat]
+[00:04] ⚪ COAL SHOVELED INTO FURNACE #4 [89% heat]
+[00:04] ⚪ COAL SHOVELED INTO FURNACE #5 [25% heat]
+[00:04] ⚪ COAL SHOVELED INTO FURNACE #4 [74% heat]
+
+📍 STATUS: Speed 4.1kts | Coal 94% | Hull 100% | Distance to NY 5058nm
+[00:05] ⚪ COAL SHOVELED INTO FURNACE #3 [25% heat]
+[00:05] ⚪ COAL SHOVELED INTO FURNACE #4 [84% heat]
+[00:05] ⚪ COAL SHOVELED INTO FURNACE #2 [25% heat]
+[00:06] ⚪ COAL SHOVELED INTO FURNACE #4 [67% heat]
+[00:06] ⚪ COAL SHOVELED INTO FURNACE #4 [82% heat]

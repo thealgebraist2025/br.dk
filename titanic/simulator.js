@@ -84,6 +84,39 @@ class TitanicSimulator {
         this.difficulty = DIFFICULTIES[difficulty];
         this.difficultyName = difficulty;
         
+        // Storyline system
+        this.currentStoryline = 1;
+        this.currentStage = 1;
+        this.storylineNames = [
+            'Classic Iceberg Encounter',
+            'Coal Depletion Emergency',
+            'North Atlantic Storm',
+            'Engine Room Fire',
+            'Lost in the Fog',
+            'Hull Integrity Failure',
+            'Crew Mutiny Crisis',
+            'Vanishing in the Atlantic',
+            'Disease Outbreak at Sea',
+            'U-Boat Encounter',
+            'Failed Rescue Attempt',
+            'Maelstrom Encounter',
+            'Electrical Storm Catastrophe',
+            'Monster Wave Impact',
+            'Internal Sabotage Plot',
+            'Multiple Cascading Failures'
+        ];
+        
+        this.stageDescriptions = [
+            'Departure - All systems nominal',
+            'Early voyage - Crew vigilant',
+            'First signs of trouble emerge',
+            'Situation worsening rapidly',
+            'Critical emergency declared',
+            'Multiple system failures',
+            'Evacuation procedures initiated',
+            'Final moments - Inevitable doom'
+        ];
+        
         // Set canvas sizes
         this.resizeCanvases();
         window.addEventListener('resize', () => this.resizeCanvases());
@@ -158,6 +191,65 @@ class TitanicSimulator {
         
         this.log("DEPARTURE AUTHORIZED - DESTINATION: NEW YORK");
         this.log("WARNING: ICEBERG REPORTS IN NORTH ATLANTIC");
+        
+        // Initialize visuals
+        this.updateStorylineVisuals();
+        this.updateCaptainPortrait();
+        this.updateWeatherVisual();
+    }
+    
+    changeStoryline(storylineId) {
+        this.currentStoryline = parseInt(storylineId);
+        this.currentStage = 1;
+        this.updateStorylineVisuals();
+        this.log(`STORYLINE CHANGED: ${this.storylineNames[this.currentStoryline - 1]}`, 'info');
+    }
+    
+    updateStorylineVisuals() {
+        const storylineImg = document.getElementById('storylineImage');
+        const storylineText = document.getElementById('storylineText');
+        
+        if (storylineImg) {
+            const imgPath = `game_images/story_${this.currentStoryline.toString().padStart(2, '0')}_stage_${this.currentStage}.png`;
+            storylineImg.src = imgPath;
+            storylineImg.onerror = () => { storylineImg.style.display = 'none'; };
+            storylineImg.onload = () => { storylineImg.style.display = 'block'; };
+        }
+        
+        if (storylineText) {
+            const storyName = this.storylineNames[this.currentStoryline - 1];
+            const stageDesc = this.stageDescriptions[this.currentStage - 1];
+            storylineText.textContent = `${storyName} - Stage ${this.currentStage}/8: ${stageDesc}`;
+        }
+    }
+    
+    updateCaptainPortrait() {
+        const captainImg = document.getElementById('captainPortrait');
+        if (!captainImg) return;
+        
+        let mood = 'confident';
+        
+        if (this.gameOver) {
+            const distToNY = this.distance(this.ship.lat, this.ship.lon, this.endPos.lat, this.endPos.lon);
+            mood = distToNY < 0.5 ? 'victorious' : 'desperate';
+        } else if (this.hullIntegrity < 30 || this.waterLevel > 70) {
+            mood = 'desperate';
+        } else if (this.hullIntegrity < 60 || this.waterLevel > 40 || this.crew.morale < 50) {
+            mood = 'worried';
+        }
+        
+        captainImg.src = `game_images/captain_${mood}.png`;
+        captainImg.onerror = () => { captainImg.style.display = 'none'; };
+        captainImg.onload = () => { captainImg.style.display = 'block'; };
+    }
+    
+    updateWeatherVisual() {
+        const weatherImg = document.getElementById('weatherIcon');
+        if (!weatherImg) return;
+        
+        weatherImg.src = `game_images/weather_${this.weather.condition}.png`;
+        weatherImg.onerror = () => { weatherImg.style.display = 'none'; };
+        weatherImg.onload = () => { weatherImg.style.display = 'block'; };
     }
     
     resizeCanvases() {
@@ -227,6 +319,7 @@ class TitanicSimulator {
         } else {
             this.weather = { condition: 'calm', visibility: 95 + Math.random() * 5 };
         }
+        this.updateWeatherVisual();
     }
     
     repair() {
