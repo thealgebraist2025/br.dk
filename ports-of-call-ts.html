@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ports of Call - Maritime Trading Simulator</title>
+    <link rel="stylesheet" href="ports-of-call.css">
+</head>
+<body>
+    <div class="amiga-screen">
+        <div class="amiga-bar">
+            <div class="bar-left">PORTS OF CALL</div>
+            <div class="bar-right" id="game-date">Jan 1985</div>
+        </div>
+
+        <!-- Main Menu -->
+        <div id="main-menu" class="screen active">
+            <h1>⚓ PORTS OF CALL ⚓</h1>
+            <div class="subtitle">Maritime Trading Simulator</div>
+            <div class="menu-box">
+                <button onclick="startNewGame()" class="amiga-btn">NEW GAME</button>
+                <button onclick="showInstructions()" class="amiga-btn">INSTRUCTIONS</button>
+            </div>
+            <div class="credits">Inspired by the classic Amiga game (1986)</div>
+        </div>
+
+        <!-- Instructions -->
+        <div id="instructions" class="screen">
+            <h2>HOW TO PLAY</h2>
+            <div class="text-box">
+                <p><strong>OBJECTIVE:</strong> Build a shipping empire! Start with one ship and $100,000.</p>
+                <p><strong>GAMEPLAY:</strong></p>
+                <ul>
+                    <li>Buy and sell cargo at different ports</li>
+                    <li>Navigate between ports using the map</li>
+                    <li>Dock your ship carefully to avoid damage</li>
+                    <li>Manage fuel, maintenance, and finances</li>
+                    <li>Expand your fleet with more ships</li>
+                    <li>Watch out for storms and pirates!</li>
+                </ul>
+                <p><strong>WIN:</strong> Reach $1,000,000 in assets!</p>
+            </div>
+            <button onclick="showMainMenu()" class="amiga-btn">BACK</button>
+        </div>
+
+        <!-- Company Setup -->
+        <div id="setup" class="screen">
+            <h2>START YOUR SHIPPING COMPANY</h2>
+            <div class="form-box">
+                <label>Company Name:</label>
+                <input type="text" id="company-name" maxlength="20" value="SeaLines Inc.">
+                <label>Starting Capital: $100,000</label>
+                <label>Starting Ship: Coastal Freighter</label>
+            </div>
+            <button onclick="initializeGame()" class="amiga-btn">START GAME</button>
+        </div>
+
+        <!-- Main Game Screen -->
+        <div id="game-screen" class="screen">
+            <div class="game-layout">
+                <!-- Status Panel -->
+                <div class="status-panel">
+                    <div class="status-section">
+                        <h3 id="company-display">Company</h3>
+                        <div class="status-item">
+                            <span>Cash:</span>
+                            <span id="cash" class="value">$0</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Total Assets:</span>
+                            <span id="assets" class="value">$0</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Ships Owned:</span>
+                            <span id="ship-count" class="value">1</span>
+                        </div>
+                    </div>
+
+                    <div class="status-section">
+                        <h3>Current Ship</h3>
+                        <div class="status-item">
+                            <span>Name:</span>
+                            <span id="ship-name" class="value">-</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Type:</span>
+                            <span id="ship-type" class="value">-</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Fuel:</span>
+                            <span id="fuel" class="value">0%</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Condition:</span>
+                            <span id="condition" class="value">0%</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Cargo:</span>
+                            <span id="cargo-used" class="value">0/0</span>
+                        </div>
+                    </div>
+
+                    <div class="status-section">
+                        <h3 id="port-display">Port</h3>
+                        <div class="status-item">
+                            <span>Location:</span>
+                            <span id="current-port" class="value">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Action Area -->
+                <div class="action-area">
+                    <div class="action-buttons">
+                        <button onclick="showMap()" class="amiga-btn">🗺️ MAP</button>
+                        <button onclick="showCargo()" class="amiga-btn">📦 CARGO</button>
+                        <button onclick="showMarketAnalysis()" class="amiga-btn">📊 ANALYSIS</button>
+                        <button onclick="showShipyard()" class="amiga-btn">🚢 SHIPYARD</button>
+                        <button onclick="refuelShip()" class="amiga-btn">⛽ REFUEL</button>
+                        <button onclick="repairShip()" class="amiga-btn">🔧 REPAIR</button>
+                        <button onclick="showFinances()" class="amiga-btn">💰 FINANCES</button>
+                    </div>
+
+                    <div id="action-content" class="action-content">
+                        <div class="welcome-msg">
+                            <h2>Welcome, Captain!</h2>
+                            <p>Select an action from the buttons above to begin your maritime trading adventure.</p>
+                            <p class="hint">💡 Start by checking the MAP to see available ports, or visit CARGO to trade goods.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Screen -->
+        <div id="navigation" class="screen">
+            <h2>NAVIGATION</h2>
+            <div id="nav-info" class="text-box"></div>
+            <canvas id="nav-canvas" width="600" height="400"></canvas>
+            <div id="nav-controls" class="nav-controls">
+                <div class="nav-row">
+                    <button onclick="adjustSpeed(-1)" class="amiga-btn small">SLOW</button>
+                    <span id="ship-speed" class="value">Speed: 10 knots</span>
+                    <button onclick="adjustSpeed(1)" class="amiga-btn small">FAST</button>
+                </div>
+                <div class="nav-row">
+                    <button onclick="adjustCourse(-10)" class="amiga-btn small">◄ LEFT</button>
+                    <span id="ship-heading" class="value">Heading: 0°</span>
+                    <button onclick="adjustCourse(10)" class="amiga-btn small">RIGHT ►</button>
+                </div>
+            </div>
+            <button onclick="cancelNavigation()" class="amiga-btn">CANCEL</button>
+        </div>
+
+        <!-- Docking Choice Screen -->
+        <div id="docking-choice" class="screen">
+            <h2>⚓ APPROACHING PORT</h2>
+            <div class="text-box">
+                <p>You are approaching <strong><span id="approaching-port">Port</span></strong>.</p>
+                <p>How would you like to dock?</p>
+            </div>
+            <div class="menu-box">
+                <button onclick="manualDocking()" class="amiga-btn">
+                    🎮 MANUAL DOCKING<br>
+                    <span style="font-size: 12px;">Take the helm yourself (Free)</span>
+                </button>
+                <button onclick="hirePilot()" class="amiga-btn">
+                    👨‍✈️ HIRE HARBOR PILOT<br>
+                    <span style="font-size: 12px;" id="pilot-cost">Cost: $500</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Docking Screen -->
+        <div id="docking" class="screen">
+            <h2>DOCKING SIMULATOR</h2>
+            <div id="nav-info" class="text-box"></div>
+            <canvas id="dock-canvas" width="600" height="400"></canvas>
+            <div class="dock-controls">
+                <div class="control-section">
+                    <label>RUDDER (←/→)</label>
+                    <button onclick="dockingControl('left')" class="amiga-btn small">◄ PORT</button>
+                    <button onclick="dockingControl('center')" class="amiga-btn small">CENTER (C)</button>
+                    <button onclick="dockingControl('right')" class="amiga-btn small">STARBOARD ►</button>
+                </div>
+                <div class="control-section">
+                    <label>ENGINE (↑/↓)</label>
+                    <button onclick="dockingControl('reverse')" class="amiga-btn small">◄◄ ASTERN (R)</button>
+                    <button onclick="dockingControl('slow')" class="amiga-btn small">SLOW</button>
+                    <button onclick="dockingControl('stop')" class="amiga-btn small">STOP (SPACE)</button>
+                    <button onclick="dockingControl('go')" class="amiga-btn small">AHEAD</button>
+                    <button onclick="dockingControl('full')" class="amiga-btn small">FULL ►► (F)</button>
+                </div>
+                <div class="control-section">
+                    <label>BOW THRUSTER (Q/E)</label>
+                    <button onclick="dockingControl('bow_left')" class="amiga-btn small">◄ PORT (Q)</button>
+                    <button onclick="dockingControl('bow_off')" class="amiga-btn small">OFF (W)</button>
+                    <button onclick="dockingControl('bow_right')" class="amiga-btn small">STARBOARD ► (E)</button>
+                </div>
+            </div>
+            <div class="dock-help">
+                <p>💡 Realistic Physics: Momentum, drag, inertia. Rudder only works when moving. Use bow thrusters for lateral control!</p>
+            </div>
+        </div>
+
+        <!-- Messages/Events -->
+        <div id="message-box" class="message-box hidden">
+            <div class="message-content">
+                <h3 id="message-title">Message</h3>
+                <p id="message-text"></p>
+                <button onclick="closeMessage()" class="amiga-btn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="dist/game.js"></script>
+</body>
+</html>
