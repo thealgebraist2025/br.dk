@@ -324,7 +324,6 @@ function hirePilot() {
     
     showScreen('game-screen');
     updateDisplay();
-    }, 2000);
 }
 
 // Docking Simulator - Three Phase System
