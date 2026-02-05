@@ -158,22 +158,28 @@
             <canvas id="dock-canvas" width="600" height="400"></canvas>
             <div class="dock-controls">
                 <div class="control-section">
-                    <label>RUDDER</label>
+                    <label>RUDDER (←/→)</label>
                     <button onclick="dockingControl('left')" class="amiga-btn small">◄ PORT</button>
-                    <button onclick="dockingControl('center')" class="amiga-btn small">CENTER</button>
+                    <button onclick="dockingControl('center')" class="amiga-btn small">CENTER (C)</button>
                     <button onclick="dockingControl('right')" class="amiga-btn small">STARBOARD ►</button>
                 </div>
                 <div class="control-section">
-                    <label>ENGINE</label>
-                    <button onclick="dockingControl('reverse')" class="amiga-btn small">◄◄ ASTERN</button>
+                    <label>ENGINE (↑/↓)</label>
+                    <button onclick="dockingControl('reverse')" class="amiga-btn small">◄◄ ASTERN (R)</button>
                     <button onclick="dockingControl('slow')" class="amiga-btn small">SLOW</button>
-                    <button onclick="dockingControl('stop')" class="amiga-btn small">STOP</button>
+                    <button onclick="dockingControl('stop')" class="amiga-btn small">STOP (SPACE)</button>
                     <button onclick="dockingControl('go')" class="amiga-btn small">AHEAD</button>
-                    <button onclick="dockingControl('full')" class="amiga-btn small">FULL ►►</button>
+                    <button onclick="dockingControl('full')" class="amiga-btn small">FULL ►► (F)</button>
+                </div>
+                <div class="control-section">
+                    <label>BOW THRUSTER (Q/E)</label>
+                    <button onclick="dockingControl('bow_left')" class="amiga-btn small">◄ PORT (Q)</button>
+                    <button onclick="dockingControl('bow_off')" class="amiga-btn small">OFF (W)</button>
+                    <button onclick="dockingControl('bow_right')" class="amiga-btn small">STARBOARD ► (E)</button>
                 </div>
             </div>
             <div class="dock-help">
-                <p>💡 Use Arrow Keys: ← → for rudder, ↑ for engine power, ↓ for slow, Space for stop</p>
+                <p>💡 Realistic Physics: Momentum, drag, inertia. Rudder only works when moving. Use bow thrusters for lateral control!</p>
             </div>
         </div>
 

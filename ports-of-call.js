@@ -304,25 +304,46 @@ let dockingState = {
 };
 
 function startDocking() {
-    // Reset docking state - simplified to just final docking
+    // Reset docking state with realistic physics parameters
     dockingState = {
-        phase: 3, // Skip to final docking only
+        phase: 3,
         shipX: 50,
         shipY: 200,
-        shipVelX: 1,
+        shipVelX: 0.5,
         shipVelY: 0,
         shipAngle: 0,
         shipAngularVel: 0,
-        enginePower: 30,
+        enginePower: 20,
+        targetEnginePower: 20,
         rudderAngle: 0,
+        bowThruster: 0,  // Lateral thruster at bow (-100 to 100)
+        sternThruster: 0, // Lateral thruster at stern (-100 to 100)
         damage: 0,
         dockX: 550,
         dockY: 200,
-        mass: 1000,
-        drag: 0.98,
-        maxSpeed: 4,
-        shipLength: 80,
-        shipWidth: 10
+        
+        // Realistic physics constants
+        mass: 5000,              // Ship mass in tons
+        momentOfInertia: 80000,  // Rotational inertia
+        length: 80,
+        width: 10,
+        
+        // Drag coefficients
+        linearDrag: 0.05,        // Water resistance increases with speed
+        angularDrag: 0.15,       // Rotational damping
+        lateralDrag: 0.3,        // Higher drag when moving sideways
+        
+        // Forces
+        maxEngineForce: 0.15,    // Maximum thrust
+        engineResponseTime: 0.1, // Engine takes time to respond
+        rudderForce: 0.008,      // Rudder effectiveness (only when moving)
+        thrusterForce: 0.03,     // Bow/stern thruster force
+        
+        // Environmental
+        currentX: 0.02,          // Water current (small drift)
+        currentY: 0.01,
+        windX: 0,
+        windY: 0
     };
     
     updateDockingInfo();
@@ -332,16 +353,20 @@ function startDocking() {
 function updateDockingInfo() {
     const info = document.getElementById('nav-info');
     const speed = Math.sqrt(dockingState.shipVelX**2 + dockingState.shipVelY**2);
-    const distToDock = Math.max(0, Math.round(dockingState.dockX - dockingState.shipX - dockingState.shipLength/2));
+    const distToDock = Math.max(0, Math.round(dockingState.dockX - dockingState.shipX - dockingState.length/2));
     
     info.innerHTML = `
-        <h3>⚓ DOCKING PROCEDURE - Carefully align and dock your vessel</h3>
-        <p>Speed: <span class="value">${speed.toFixed(1)} knots</span> | 
+        <h3>⚓ DOCKING PROCEDURE - Realistic Ship Physics</h3>
+        <p>Speed: <span class="value">${speed.toFixed(2)} knots</span> | 
         Heading: <span class="value">${Math.round(dockingState.shipAngle)}°</span> | 
         Distance: <span class="value">${distToDock}m</span></p>
-        <p>Engine: <span class="value">${dockingState.enginePower}%</span> | 
-        Rudder: <span class="value">${dockingState.rudderAngle}°</span></p>
-        <p class="hint">💡 Approach slowly (under 2 knots), align straight (0°), and dock gently!</p>
+        <p>Engine: <span class="value">${Math.round(dockingState.enginePower)}%</span> | 
+        Rudder: <span class="value">${Math.round(dockingState.rudderAngle)}°</span> |
+        Bow Thruster: <span class="value">${Math.round(dockingState.bowThruster)}%</span></p>
+        <p>Forward Vel: <span class="value">${dockingState.shipVelX.toFixed(2)}</span> | 
+        Lateral Vel: <span class="value">${dockingState.shipVelY.toFixed(2)}</span> |
+        Angular Vel: <span class="value">${dockingState.shipAngularVel.toFixed(3)}</span></p>
+        <p class="hint">💡 Use bow thrusters (Q/E) for lateral movement. Rudder only works when moving forward!</p>
     `;
 }
 
@@ -375,23 +400,30 @@ function runDockingSimulation() {
         updateDockingInfo();
         
         // Check if docked
-        const distToDock = dockingState.dockX - dockingState.shipX - dockingState.shipLength/2;
-        const alignedY = Math.abs(dockingState.shipY - dockingState.dockY) < 20;
-        const alignedAngle = Math.abs(dockingState.shipAngle) < 10;
+        const distToDock = dockingState.dockX - dockingState.shipX - dockingState.length/2;
+        const alignedY = Math.abs(dockingState.shipY - dockingState.dockY) < 25;
+        const alignedAngle = Math.abs(dockingState.shipAngle) < 8;
         const speed = Math.sqrt(dockingState.shipVelX**2 + dockingState.shipVelY**2);
         
-        if (distToDock < 5 && distToDock > -5 && alignedY && alignedAngle) {
+        if (distToDock < 5 && distToDock > -5 && alignedY && alignedAngle && speed < 0.5) {
             cancelAnimationFrame(animationFrame);
             completeDocking(speed);
             return;
         }
         
-        // Check collision with dock (too close without proper alignment)
-        if (dockingState.shipX + dockingState.shipLength/2 > dockingState.dockX - 20) {
-            if (!alignedY || !alignedAngle) {
-                dockingState.damage += 3;
-                dockingState.shipVelX = -Math.abs(dockingState.shipVelX) * 0.8;
-                dockingState.shipVelY *= 0.5;
+        // Check collision with dock (realistic collision response)
+        if (dockingState.shipX + dockingState.length/2 > dockingState.dockX - 20) {
+            const collisionSpeed = Math.abs(dockingState.shipVelX);
+            if (collisionSpeed > 0.1) {
+                // Bounce off dock
+                dockingState.shipVelX = -dockingState.shipVelX * 0.4; // Energy loss
+                dockingState.shipVelY *= 0.6;
+                dockingState.damage += collisionSpeed * 20;
+                
+                // If not aligned, more damage
+                if (!alignedY || !alignedAngle) {
+                    dockingState.damage += 5;
+                }
             }
         }
         
@@ -555,8 +587,8 @@ function drawPlayerShip(ctx) {
     ctx.translate(dockingState.shipX, dockingState.shipY);
     ctx.rotate(dockingState.shipAngle * Math.PI / 180);
     
-    const length = dockingState.shipLength;
-    const width = dockingState.shipWidth;
+    const length = dockingState.length;
+    const width = dockingState.width;
     
     // Ship hull - simple rectangle, 8:1 ratio
     ctx.fillStyle = '#888';
@@ -587,14 +619,27 @@ function drawPlayerShip(ctx) {
     }
     
     // Propeller wash (when engine on)
-    if (dockingState.enginePower > 0) {
-        ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+    if (Math.abs(dockingState.enginePower) > 5) {
+        ctx.strokeStyle = dockingState.enginePower > 0 ? 'rgba(255,255,255,0.5)' : 'rgba(255,100,100,0.5)';
         ctx.lineWidth = 2;
         ctx.beginPath();
+        const washLength = Math.abs(dockingState.enginePower) / 5;
+        const washDir = dockingState.enginePower > 0 ? -1 : 1;
         ctx.moveTo(-length/2, -width/3);
-        ctx.lineTo(-length/2 - dockingState.enginePower/5, -width/2);
+        ctx.lineTo(-length/2 + washDir * washLength, -width/2);
         ctx.moveTo(-length/2, width/3);
-        ctx.lineTo(-length/2 - dockingState.enginePower/5, width/2);
+        ctx.lineTo(-length/2 + washDir * washLength, width/2);
+        ctx.stroke();
+    }
+    
+    // Bow thruster indicators
+    if (Math.abs(dockingState.bowThruster) > 5) {
+        ctx.strokeStyle = dockingState.bowThruster > 0 ? 'rgba(0,255,255,0.7)' : 'rgba(255,0,255,0.7)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        const thrustDir = dockingState.bowThruster > 0 ? 1 : -1;
+        ctx.moveTo(length/3, 0);
+        ctx.lineTo(length/3, thrustDir * width * 2);
         ctx.stroke();
     }
     
@@ -608,55 +653,124 @@ function drawPlayerShip(ctx) {
                -rudderLength * Math.sin(dockingState.rudderAngle * Math.PI / 180));
     ctx.stroke();
     
+    // Velocity vector (for debugging/feedback)
+    ctx.strokeStyle = 'rgba(0,255,0,0.6)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(dockingState.shipVelX * 20, dockingState.shipVelY * 20);
+    ctx.stroke();
+    
     ctx.restore();
 }
 
 function updatePhysics() {
     const canvas = document.getElementById('dock-canvas');
+    const dt = 1/60; // Time step (60 FPS)
     
-    // Engine thrust
-    const thrust = dockingState.enginePower / 100 * 0.1;
+    // Engine response (engines don't respond instantly)
+    const engineDiff = dockingState.targetEnginePower - dockingState.enginePower;
+    dockingState.enginePower += engineDiff * dockingState.engineResponseTime;
+    
+    // === FORCES ===
+    let forceX = 0;
+    let forceY = 0;
+    let torque = 0;
+    
+    // 1. Engine thrust (in ship's forward direction)
     const angleRad = dockingState.shipAngle * Math.PI / 180;
-    dockingState.shipVelX += Math.cos(angleRad) * thrust;
-    dockingState.shipVelY += Math.sin(angleRad) * thrust;
+    const thrust = (dockingState.enginePower / 100) * dockingState.maxEngineForce;
+    forceX += Math.cos(angleRad) * thrust;
+    forceY += Math.sin(angleRad) * thrust;
     
-    // Rudder effect (only when moving)
+    // 2. Rudder force (only effective when ship is moving forward)
+    const forwardSpeed = dockingState.shipVelX * Math.cos(angleRad) + 
+                         dockingState.shipVelY * Math.sin(angleRad);
+    if (forwardSpeed > 0.1) {
+        // Rudder creates a force perpendicular to ship's direction
+        const rudderEffectiveness = Math.min(forwardSpeed, 2) / 2; // More effective at higher speeds
+        torque += dockingState.rudderAngle * dockingState.rudderForce * rudderEffectiveness;
+    }
+    
+    // 3. Bow thruster (lateral force at bow)
+    if (dockingState.bowThruster !== 0) {
+        const thrusterForceValue = (dockingState.bowThruster / 100) * dockingState.thrusterForce;
+        // Force perpendicular to ship
+        forceX += -Math.sin(angleRad) * thrusterForceValue;
+        forceY += Math.cos(angleRad) * thrusterForceValue;
+        // Torque from bow thruster (creates rotation)
+        torque += thrusterForceValue * (dockingState.length / 3);
+    }
+    
+    // 4. Stern thruster (lateral force at stern)
+    if (dockingState.sternThruster !== 0) {
+        const thrusterForceValue = (dockingState.sternThruster / 100) * dockingState.thrusterForce;
+        forceX += -Math.sin(angleRad) * thrusterForceValue;
+        forceY += Math.cos(angleRad) * thrusterForceValue;
+        torque -= thrusterForceValue * (dockingState.length / 3);
+    }
+    
+    // 5. Water current
+    forceX += dockingState.currentX * 0.5;
+    forceY += dockingState.currentY * 0.5;
+    
+    // === DRAG FORCES ===
+    
+    // Linear drag (opposes velocity, increases with speed squared)
     const speed = Math.sqrt(dockingState.shipVelX**2 + dockingState.shipVelY**2);
-    dockingState.shipAngularVel += dockingState.rudderAngle * 0.002 * speed;
+    if (speed > 0.01) {
+        const dragMagnitude = dockingState.linearDrag * speed * speed;
+        forceX -= (dockingState.shipVelX / speed) * dragMagnitude;
+        forceY -= (dockingState.shipVelY / speed) * dragMagnitude;
+    }
     
-    // Angular drag
-    dockingState.shipAngularVel *= 0.95;
+    // Lateral drag (higher resistance when moving sideways)
+    const lateralVelX = -Math.sin(angleRad);
+    const lateralVelY = Math.cos(angleRad);
+    const lateralSpeed = dockingState.shipVelX * lateralVelX + dockingState.shipVelY * lateralVelY;
+    if (Math.abs(lateralSpeed) > 0.01) {
+        const lateralDragMagnitude = dockingState.lateralDrag * lateralSpeed * Math.abs(lateralSpeed);
+        forceX -= lateralVelX * lateralDragMagnitude;
+        forceY -= lateralVelY * lateralDragMagnitude;
+    }
+    
+    // Angular drag (opposes rotation)
+    torque -= dockingState.shipAngularVel * dockingState.angularDrag;
+    
+    // === INTEGRATION (F = ma) ===
+    
+    // Linear motion
+    const accelX = forceX / dockingState.mass;
+    const accelY = forceY / dockingState.mass;
+    
+    dockingState.shipVelX += accelX * dt * 60; // Scale by dt
+    dockingState.shipVelY += accelY * dt * 60;
+    
+    // Angular motion
+    const angularAccel = torque / dockingState.momentOfInertia;
+    dockingState.shipAngularVel += angularAccel * dt * 60;
+    
+    // Update position and angle
+    dockingState.shipX += dockingState.shipVelX;
+    dockingState.shipY += dockingState.shipVelY;
     dockingState.shipAngle += dockingState.shipAngularVel;
     
     // Keep angle in range
-    if (dockingState.shipAngle > 180) dockingState.shipAngle -= 360;
-    if (dockingState.shipAngle < -180) dockingState.shipAngle += 360;
+    while (dockingState.shipAngle > 180) dockingState.shipAngle -= 360;
+    while (dockingState.shipAngle < -180) dockingState.shipAngle += 360;
     
-    // Drag
-    dockingState.shipVelX *= 0.985;
-    dockingState.shipVelY *= 0.985;
-    
-    // Speed limit
-    const currentSpeed = Math.sqrt(dockingState.shipVelX**2 + dockingState.shipVelY**2);
-    if (currentSpeed > dockingState.maxSpeed) {
-        dockingState.shipVelX *= dockingState.maxSpeed / currentSpeed;
-        dockingState.shipVelY *= dockingState.maxSpeed / currentSpeed;
-    }
-    
-    // Update position
-    dockingState.shipX += dockingState.shipVelX;
-    dockingState.shipY += dockingState.shipVelY;
-    
-    // Boundaries
+    // Boundaries with realistic collision
     if (dockingState.shipY < 30) {
         dockingState.shipY = 30;
-        dockingState.shipVelY = Math.abs(dockingState.shipVelY) * 0.5;
-        dockingState.damage += 1;
+        dockingState.shipVelY = -dockingState.shipVelY * 0.3; // Bounce with energy loss
+        dockingState.shipVelX *= 0.7; // Friction
+        dockingState.damage += Math.abs(dockingState.shipVelY) * 10;
     }
     if (dockingState.shipY > canvas.height - 30) {
         dockingState.shipY = canvas.height - 30;
-        dockingState.shipVelY = -Math.abs(dockingState.shipVelY) * 0.5;
-        dockingState.damage += 1;
+        dockingState.shipVelY = -dockingState.shipVelY * 0.3;
+        dockingState.shipVelX *= 0.7;
+        dockingState.damage += Math.abs(dockingState.shipVelY) * 10;
     }
 }
 
@@ -678,28 +792,37 @@ function completeDocking(speed) {
 window.dockingControl = function(action) {
     switch(action) {
         case 'left':
-            dockingState.rudderAngle = Math.max(-30, dockingState.rudderAngle - 5);
+            dockingState.rudderAngle = Math.max(-35, dockingState.rudderAngle - 5);
             break;
         case 'right':
-            dockingState.rudderAngle = Math.min(30, dockingState.rudderAngle + 5);
+            dockingState.rudderAngle = Math.min(35, dockingState.rudderAngle + 5);
             break;
         case 'center':
             dockingState.rudderAngle = 0;
             break;
         case 'slow':
-            dockingState.enginePower = Math.max(0, dockingState.enginePower - 10);
+            dockingState.targetEnginePower = Math.max(-30, dockingState.targetEnginePower - 10);
             break;
         case 'stop':
-            dockingState.enginePower = 0;
+            dockingState.targetEnginePower = 0;
             break;
         case 'go':
-            dockingState.enginePower = Math.min(100, dockingState.enginePower + 10);
+            dockingState.targetEnginePower = Math.min(100, dockingState.targetEnginePower + 10);
             break;
         case 'full':
-            dockingState.enginePower = 100;
+            dockingState.targetEnginePower = 100;
             break;
         case 'reverse':
-            dockingState.enginePower = Math.max(-50, dockingState.enginePower - 10);
+            dockingState.targetEnginePower = Math.max(-30, dockingState.targetEnginePower - 10);
+            break;
+        case 'bow_left':
+            dockingState.bowThruster = Math.max(-100, dockingState.bowThruster - 20);
+            break;
+        case 'bow_right':
+            dockingState.bowThruster = Math.min(100, dockingState.bowThruster + 20);
+            break;
+        case 'bow_off':
+            dockingState.bowThruster = 0;
             break;
     }
 };
@@ -1005,6 +1128,21 @@ document.addEventListener('keydown', (e) => {
             case 'f':
             case 'F':
                 dockingControl('full');
+                break;
+            case 'q':
+            case 'Q':
+                e.preventDefault();
+                dockingControl('bow_left');
+                break;
+            case 'e':
+            case 'E':
+                e.preventDefault();
+                dockingControl('bow_right');
+                break;
+            case 'w':
+            case 'W':
+                e.preventDefault();
+                dockingControl('bow_off');
                 break;
         }
     }
