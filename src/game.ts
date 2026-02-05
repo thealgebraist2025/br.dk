@@ -1,6 +1,6 @@
 // Main game logic for Ports of Call
-import type { GameState, CargoMarket, Ship, Port, DockingState, TradeOpportunity } from './types';
-import { SHIP_TYPES, PORTS, CARGO_TYPES } from './constants';
+// Types are defined in types.ts
+// Constants are defined in constants.ts
 
 // Game State
 let gameState: GameState = {
@@ -55,7 +55,7 @@ let dockingState: DockingState = {
 };
 
 // UI Functions
-export function showScreen(screenId: string): void {
+function showScreen(screenId: string): void {
     const screens = document.querySelectorAll('.screen');
     screens.forEach(screen => screen.classList.remove('active'));
     
@@ -65,7 +65,7 @@ export function showScreen(screenId: string): void {
     }
 }
 
-export function showMessage(title: string, message: string): void {
+function showMessage(title: string, message: string): void {
     const messageBox = document.getElementById('message-box');
     const messageTitle = document.getElementById('message-title');
     const messageText = document.getElementById('message-text');
@@ -77,27 +77,27 @@ export function showMessage(title: string, message: string): void {
     }
 }
 
-export function closeMessage(): void {
+function closeMessage(): void {
     const messageBox = document.getElementById('message-box');
     if (messageBox) {
         messageBox.classList.add('hidden');
     }
 }
 
-export function showMainMenu(): void {
+function showMainMenu(): void {
     showScreen('main-menu');
 }
 
-export function showInstructions(): void {
+function showInstructions(): void {
     showScreen('instructions');
 }
 
-export function startNewGame(): void {
+function startNewGame(): void {
     showScreen('setup');
 }
 
 // Initialize game
-export function initializeCargoMarket(): void {
+function initializeCargoMarket(): void {
     cargoMarket = {};
     PORTS.forEach(port => {
         cargoMarket[port.id] = {};
@@ -112,7 +112,7 @@ export function initializeCargoMarket(): void {
     });
 }
 
-export function initializeGame(): void {
+function initializeGame(): void {
     const companyNameInput = document.getElementById('company-name') as HTMLInputElement;
     const companyName = companyNameInput?.value || 'SeaLines Inc.';
     
@@ -147,7 +147,7 @@ export function initializeGame(): void {
     updateDisplay();
 }
 
-export function updateDisplay(): void {
+function updateDisplay(): void {
     const ship = gameState.currentShip;
     if (!ship) return;
     
@@ -218,13 +218,13 @@ export function updateDisplay(): void {
     }
 }
 
-export function calculateDistance(port1: Port, port2: Port): number {
+function calculateDistance(port1: Port, port2: Port): number {
     const dx = port2.x - port1.x;
     const dy = port2.y - port1.y;
     return Math.sqrt(dx * dx + dy * dy) * 10; // Scale factor for nautical miles
 }
 
-export function showMap(): void {
+function showMap(): void {
     const content = document.getElementById('action-content');
     if (!content || !gameState.currentPort || !gameState.currentShip) return;
     
@@ -250,7 +250,7 @@ export function showMap(): void {
     content.innerHTML = html;
 }
 
-export function navigateToPort(portId: string): void {
+function navigateToPort(portId: string): void {
     if (!gameState.currentPort || !gameState.currentShip) return;
     
     const targetPort = PORTS.find(p => p.id === portId);
@@ -340,12 +340,12 @@ function showDockingChoice(): void {
     showScreen('docking-choice');
 }
 
-export function manualDocking(): void {
+function manualDocking(): void {
     showScreen('docking');
     startDocking();
 }
 
-export function hirePilot(): void {
+function hirePilot(): void {
     if (!gameState.currentShip || !gameState.currentPort) return;
     
     // Calculate pilot cost
@@ -753,7 +753,7 @@ function completeDocking(speed: number): void {
     updateDisplay();
 }
 
-export function dockingControl(action: string): void {
+function dockingControl(action: string): void {
     switch(action) {
         case 'left':
             dockingState.rudderAngle = Math.max(-35, dockingState.rudderAngle - 5);
@@ -791,12 +791,12 @@ export function dockingControl(action: string): void {
     }
 }
 
-export function cancelNavigation(): void {
+function cancelNavigation(): void {
     gameState.navigating = false;
     showScreen('game-screen');
 }
 
-export function showCargo(): void {
+function showCargo(): void {
     const content = document.getElementById('action-content');
     if (!content || !gameState.currentShip || !gameState.currentPort) return;
     
@@ -834,7 +834,7 @@ export function showCargo(): void {
     content.innerHTML = html;
 }
 
-export function buyCargo(cargoId: string): void {
+function buyCargo(cargoId: string): void {
     if (!gameState.currentShip || !gameState.currentPort) return;
     
     const ship = gameState.currentShip;
@@ -863,7 +863,7 @@ export function buyCargo(cargoId: string): void {
     showCargo();
 }
 
-export function sellCargo(cargoId: string): void {
+function sellCargo(cargoId: string): void {
     if (!gameState.currentShip || !gameState.currentPort) return;
     
     const ship = gameState.currentShip;
@@ -894,7 +894,7 @@ function updateCargoMarket(): void {
     });
 }
 
-export function showMarketAnalysis(): void {
+function showMarketAnalysis(): void {
     const content = document.getElementById('action-content');
     if (!content || !gameState.currentShip || !gameState.currentPort) return;
     
@@ -1002,7 +1002,7 @@ export function showMarketAnalysis(): void {
     content.innerHTML = html;
 }
 
-export function refuelShip(): void {
+function refuelShip(): void {
     if (!gameState.currentShip) return;
     
     const ship = gameState.currentShip;
@@ -1021,7 +1021,7 @@ export function refuelShip(): void {
     showMessage('Refueled', `Ship refueled for $${cost.toLocaleString()}`);
 }
 
-export function repairShip(): void {
+function repairShip(): void {
     if (!gameState.currentShip) return;
     
     const ship = gameState.currentShip;
@@ -1045,7 +1045,7 @@ export function repairShip(): void {
     showMessage('Repaired', `Ship repaired for $${cost.toLocaleString()}`);
 }
 
-export function showShipyard(): void {
+function showShipyard(): void {
     const content = document.getElementById('action-content');
     if (!content) return;
     
@@ -1068,7 +1068,7 @@ export function showShipyard(): void {
     content.innerHTML = html;
 }
 
-export function buyShip(shipType: string): void {
+function buyShip(shipType: string): void {
     const type = SHIP_TYPES[shipType];
     if (!type || !gameState.currentPort) return;
     
@@ -1099,7 +1099,7 @@ export function buyShip(shipType: string): void {
     showShipyard();
 }
 
-export function showFinances(): void {
+function showFinances(): void {
     const content = document.getElementById('action-content');
     if (!content) return;
     

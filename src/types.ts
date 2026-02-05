@@ -1,6 +1,6 @@
 // Type definitions for Ports of Call game
 
-export interface Port {
+interface Port {
     id: string;
     name: string;
     x: number;
@@ -8,7 +8,7 @@ export interface Port {
     region: string;
 }
 
-export interface ShipType {
+interface ShipType {
     name: string;
     cost: number;
     capacity: number;
@@ -17,7 +17,7 @@ export interface ShipType {
     fuelConsumption: number;
 }
 
-export interface Ship {
+interface Ship {
     id: string;
     name: string;
     type: 'coastal' | 'bulk' | 'container' | 'tanker';
@@ -31,13 +31,13 @@ export interface Ship {
     currentPort: Port;
 }
 
-export interface Company {
+interface Company {
     name: string;
     cash: number;
     founded: Date;
 }
 
-export interface GameState {
+interface GameState {
     company: Company;
     currentDate: Date;
     currentShip: Ship | null;
@@ -47,21 +47,21 @@ export interface GameState {
     navigationTarget: Port | null;
 }
 
-export interface CargoType {
+interface CargoType {
     id: string;
     name: string;
     basePrice: number;
 }
 
-export interface CargoMarketData {
+interface CargoMarketData {
     buyPrice: number;
     sellPrice: number;
     demand: number;
 }
 
-export type CargoMarket = Record<string, Record<string, CargoMarketData>>;
+type CargoMarket = Record<string, Record<string, CargoMarketData>>;
 
-export interface DockingState {
+interface DockingState {
     phase: number;
     shipX: number;
     shipY: number;
@@ -94,7 +94,7 @@ export interface DockingState {
     windY: number;
 }
 
-export interface TradeOpportunity {
+interface TradeOpportunity {
     cargo: string;
     buyPort: string;
     buyPrice: number;

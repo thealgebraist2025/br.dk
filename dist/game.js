@@ -1,4 +1,66 @@
-import { SHIP_TYPES, PORTS, CARGO_TYPES } from './constants';
+"use strict";
+// Constants for Ports of Call game
+const SHIP_TYPES = {
+    coastal: {
+        name: 'Coastal Freighter',
+        cost: 50000,
+        capacity: 100,
+        speed: 12,
+        fuelCapacity: 500,
+        fuelConsumption: 2
+    },
+    bulk: {
+        name: 'Bulk Carrier',
+        cost: 150000,
+        capacity: 500,
+        speed: 15,
+        fuelCapacity: 1000,
+        fuelConsumption: 4
+    },
+    container: {
+        name: 'Container Ship',
+        cost: 300000,
+        capacity: 1000,
+        speed: 20,
+        fuelCapacity: 1500,
+        fuelConsumption: 6
+    },
+    tanker: {
+        name: 'Oil Tanker',
+        cost: 500000,
+        capacity: 2000,
+        speed: 18,
+        fuelCapacity: 2000,
+        fuelConsumption: 8
+    }
+};
+const PORTS = [
+    { id: 'newyork', name: 'New York', x: 150, y: 200, region: 'North America' },
+    { id: 'london', name: 'London', x: 300, y: 150, region: 'Europe' },
+    { id: 'hamburg', name: 'Hamburg', x: 320, y: 140, region: 'Europe' },
+    { id: 'rotterdam', name: 'Rotterdam', x: 310, y: 145, region: 'Europe' },
+    { id: 'singapore', name: 'Singapore', x: 550, y: 280, region: 'Asia' },
+    { id: 'hongkong', name: 'Hong Kong', x: 570, y: 240, region: 'Asia' },
+    { id: 'tokyo', name: 'Tokyo', x: 620, y: 200, region: 'Asia' },
+    { id: 'sydney', name: 'Sydney', x: 640, y: 380, region: 'Oceania' },
+    { id: 'dubai', name: 'Dubai', x: 420, y: 250, region: 'Middle East' },
+    { id: 'capetown', name: 'Cape Town', x: 340, y: 380, region: 'Africa' },
+    { id: 'santos', name: 'Santos', x: 220, y: 360, region: 'South America' },
+    { id: 'miami', name: 'Miami', x: 160, y: 260, region: 'North America' }
+];
+const CARGO_TYPES = [
+    { id: 'oil', name: 'Crude Oil', basePrice: 50 },
+    { id: 'grain', name: 'Grain', basePrice: 30 },
+    { id: 'coal', name: 'Coal', basePrice: 40 },
+    { id: 'iron', name: 'Iron Ore', basePrice: 35 },
+    { id: 'containers', name: 'Containers', basePrice: 80 },
+    { id: 'chemicals', name: 'Chemicals', basePrice: 100 },
+    { id: 'machinery', name: 'Machinery', basePrice: 120 },
+    { id: 'electronics', name: 'Electronics', basePrice: 150 }
+];
+// Main game logic for Ports of Call
+// Types are defined in types.ts
+// Constants are defined in constants.ts
 // Game State
 let gameState = {
     company: {
@@ -49,7 +111,7 @@ let dockingState = {
     windY: 0
 };
 // UI Functions
-export function showScreen(screenId) {
+function showScreen(screenId) {
     const screens = document.querySelectorAll('.screen');
     screens.forEach(screen => screen.classList.remove('active'));
     const targetScreen = document.getElementById(screenId);
@@ -57,7 +119,7 @@ export function showScreen(screenId) {
         targetScreen.classList.add('active');
     }
 }
-export function showMessage(title, message) {
+function showMessage(title, message) {
     const messageBox = document.getElementById('message-box');
     const messageTitle = document.getElementById('message-title');
     const messageText = document.getElementById('message-text');
@@ -67,23 +129,23 @@ export function showMessage(title, message) {
         messageBox.classList.remove('hidden');
     }
 }
-export function closeMessage() {
+function closeMessage() {
     const messageBox = document.getElementById('message-box');
     if (messageBox) {
         messageBox.classList.add('hidden');
     }
 }
-export function showMainMenu() {
+function showMainMenu() {
     showScreen('main-menu');
 }
-export function showInstructions() {
+function showInstructions() {
     showScreen('instructions');
 }
-export function startNewGame() {
+function startNewGame() {
     showScreen('setup');
 }
 // Initialize game
-export function initializeCargoMarket() {
+function initializeCargoMarket() {
     cargoMarket = {};
     PORTS.forEach(port => {
         cargoMarket[port.id] = {};
@@ -97,7 +159,7 @@ export function initializeCargoMarket() {
         });
     });
 }
-export function initializeGame() {
+function initializeGame() {
     const companyNameInput = document.getElementById('company-name');
     const companyName = companyNameInput?.value || 'SeaLines Inc.';
     gameState.company.name = companyName;
@@ -126,7 +188,7 @@ export function initializeGame() {
     showScreen('game-screen');
     updateDisplay();
 }
-export function updateDisplay() {
+function updateDisplay() {
     const ship = gameState.currentShip;
     if (!ship)
         return;
@@ -186,12 +248,12 @@ export function updateDisplay() {
         }
     }
 }
-export function calculateDistance(port1, port2) {
+function calculateDistance(port1, port2) {
     const dx = port2.x - port1.x;
     const dy = port2.y - port1.y;
     return Math.sqrt(dx * dx + dy * dy) * 10; // Scale factor for nautical miles
 }
-export function showMap() {
+function showMap() {
     const content = document.getElementById('action-content');
     if (!content || !gameState.currentPort || !gameState.currentShip)
         return;
@@ -213,7 +275,7 @@ export function showMap() {
     html += '</div>';
     content.innerHTML = html;
 }
-export function navigateToPort(portId) {
+function navigateToPort(portId) {
     if (!gameState.currentPort || !gameState.currentShip)
         return;
     const targetPort = PORTS.find(p => p.id === portId);
@@ -289,11 +351,11 @@ function showDockingChoice() {
     }
     showScreen('docking-choice');
 }
-export function manualDocking() {
+function manualDocking() {
     showScreen('docking');
     startDocking();
 }
-export function hirePilot() {
+function hirePilot() {
     if (!gameState.currentShip || !gameState.currentPort)
         return;
     // Calculate pilot cost
@@ -640,7 +702,7 @@ function completeDocking(speed) {
     showScreen('game-screen');
     updateDisplay();
 }
-export function dockingControl(action) {
+function dockingControl(action) {
     switch (action) {
         case 'left':
             dockingState.rudderAngle = Math.max(-35, dockingState.rudderAngle - 5);
@@ -677,11 +739,11 @@ export function dockingControl(action) {
             break;
     }
 }
-export function cancelNavigation() {
+function cancelNavigation() {
     gameState.navigating = false;
     showScreen('game-screen');
 }
-export function showCargo() {
+function showCargo() {
     const content = document.getElementById('action-content');
     if (!content || !gameState.currentShip || !gameState.currentPort)
         return;
@@ -712,7 +774,7 @@ export function showCargo() {
     html += '</table>';
     content.innerHTML = html;
 }
-export function buyCargo(cargoId) {
+function buyCargo(cargoId) {
     if (!gameState.currentShip || !gameState.currentPort)
         return;
     const ship = gameState.currentShip;
@@ -736,7 +798,7 @@ export function buyCargo(cargoId) {
     updateDisplay();
     showCargo();
 }
-export function sellCargo(cargoId) {
+function sellCargo(cargoId) {
     if (!gameState.currentShip || !gameState.currentPort)
         return;
     const ship = gameState.currentShip;
@@ -763,7 +825,7 @@ function updateCargoMarket() {
         });
     });
 }
-export function showMarketAnalysis() {
+function showMarketAnalysis() {
     const content = document.getElementById('action-content');
     if (!content || !gameState.currentShip || !gameState.currentPort)
         return;
@@ -856,7 +918,7 @@ export function showMarketAnalysis() {
     }
     content.innerHTML = html;
 }
-export function refuelShip() {
+function refuelShip() {
     if (!gameState.currentShip)
         return;
     const ship = gameState.currentShip;
@@ -871,7 +933,7 @@ export function refuelShip() {
     updateDisplay();
     showMessage('Refueled', `Ship refueled for $${cost.toLocaleString()}`);
 }
-export function repairShip() {
+function repairShip() {
     if (!gameState.currentShip)
         return;
     const ship = gameState.currentShip;
@@ -890,7 +952,7 @@ export function repairShip() {
     updateDisplay();
     showMessage('Repaired', `Ship repaired for $${cost.toLocaleString()}`);
 }
-export function showShipyard() {
+function showShipyard() {
     const content = document.getElementById('action-content');
     if (!content)
         return;
@@ -910,7 +972,7 @@ export function showShipyard() {
     html += '</table>';
     content.innerHTML = html;
 }
-export function buyShip(shipType) {
+function buyShip(shipType) {
     const type = SHIP_TYPES[shipType];
     if (!type || !gameState.currentPort)
         return;
@@ -937,7 +999,7 @@ export function buyShip(shipType) {
     showMessage('Ship Purchased!', `You bought a ${type.name}!`);
     showShipyard();
 }
-export function showFinances() {
+function showFinances() {
     const content = document.getElementById('action-content');
     if (!content)
         return;
@@ -1042,4 +1104,5 @@ window.cancelNavigation = cancelNavigation;
 window.manualDocking = manualDocking;
 window.hirePilot = hirePilot;
 window.closeMessage = closeMessage;
+// Type definitions for Ports of Call game
 //# sourceMappingURL=game.js.map

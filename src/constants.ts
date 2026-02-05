@@ -1,7 +1,29 @@
 // Constants for Ports of Call game
-import type { Port, ShipType, CargoType } from './types';
 
-export const SHIP_TYPES: Record<string, ShipType> = {
+interface Port {
+    id: string;
+    name: string;
+    x: number;
+    y: number;
+    region: string;
+}
+
+interface ShipType {
+    name: string;
+    cost: number;
+    capacity: number;
+    speed: number;
+    fuelCapacity: number;
+    fuelConsumption: number;
+}
+
+interface CargoType {
+    id: string;
+    name: string;
+    basePrice: number;
+}
+
+const SHIP_TYPES: Record<string, ShipType> = {
     coastal: {
         name: 'Coastal Freighter',
         cost: 50000,
@@ -36,7 +58,7 @@ export const SHIP_TYPES: Record<string, ShipType> = {
     }
 };
 
-export const PORTS: Port[] = [
+const PORTS: Port[] = [
     { id: 'newyork', name: 'New York', x: 150, y: 200, region: 'North America' },
     { id: 'london', name: 'London', x: 300, y: 150, region: 'Europe' },
     { id: 'hamburg', name: 'Hamburg', x: 320, y: 140, region: 'Europe' },
@@ -51,7 +73,7 @@ export const PORTS: Port[] = [
     { id: 'miami', name: 'Miami', x: 160, y: 260, region: 'North America' }
 ];
 
-export const CARGO_TYPES: CargoType[] = [
+const CARGO_TYPES: CargoType[] = [
     { id: 'oil', name: 'Crude Oil', basePrice: 50 },
     { id: 'grain', name: 'Grain', basePrice: 30 },
     { id: 'coal', name: 'Coal', basePrice: 40 },
