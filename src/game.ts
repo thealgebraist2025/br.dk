@@ -946,7 +946,7 @@ function initializeCompetitors(count: number): void {
     }
 }
 
-function assignCompetitorRoute(ship: Ship, competitor: Competitor): void {
+function assignCompetitorRoute(ship: Ship, _competitor: Competitor): void {
     // Find a profitable route
     const opportunities: TradeOpportunity[] = [];
     

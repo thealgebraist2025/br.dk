@@ -882,7 +882,7 @@ function initializeCompetitors(count) {
         assignCompetitorRoute(ship, competitor);
     }
 }
-function assignCompetitorRoute(ship, competitor) {
+function assignCompetitorRoute(ship, _competitor) {
     // Find a profitable route
     const opportunities = [];
     CARGO_TYPES.forEach(cargo => {
