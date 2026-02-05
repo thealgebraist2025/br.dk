@@ -500,6 +500,8 @@ function updatePhase2(ctx) {
 }
 
 function updatePhase3(ctx) {
+    const canvas = document.getElementById('dock-canvas');
+    
     // Draw dock structure
     ctx.fillStyle = '#654321';
     ctx.fillRect(dockingState.dockX - 20, 0, 40, canvas.height);
