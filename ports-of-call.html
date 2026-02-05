@@ -153,18 +153,27 @@
 
         <!-- Docking Screen -->
         <div id="docking" class="screen">
-            <h2>DOCKING PROCEDURE</h2>
-            <div class="text-box">
-                <p>Carefully guide your ship to the dock. Use arrow keys or buttons.</p>
-                <p>Speed: <span id="dock-speed">0</span> knots | Distance: <span id="dock-distance">100</span>m</p>
-            </div>
+            <h2>DOCKING SIMULATOR</h2>
+            <div id="nav-info" class="text-box"></div>
             <canvas id="dock-canvas" width="600" height="400"></canvas>
             <div class="dock-controls">
-                <button onclick="dockingControl('left')" class="amiga-btn small">◄</button>
-                <button onclick="dockingControl('slow')" class="amiga-btn small">SLOW</button>
-                <button onclick="dockingControl('stop')" class="amiga-btn small">STOP</button>
-                <button onclick="dockingControl('go')" class="amiga-btn small">GO</button>
-                <button onclick="dockingControl('right')" class="amiga-btn small">►</button>
+                <div class="control-section">
+                    <label>RUDDER</label>
+                    <button onclick="dockingControl('left')" class="amiga-btn small">◄ PORT</button>
+                    <button onclick="dockingControl('center')" class="amiga-btn small">CENTER</button>
+                    <button onclick="dockingControl('right')" class="amiga-btn small">STARBOARD ►</button>
+                </div>
+                <div class="control-section">
+                    <label>ENGINE</label>
+                    <button onclick="dockingControl('reverse')" class="amiga-btn small">◄◄ ASTERN</button>
+                    <button onclick="dockingControl('slow')" class="amiga-btn small">SLOW</button>
+                    <button onclick="dockingControl('stop')" class="amiga-btn small">STOP</button>
+                    <button onclick="dockingControl('go')" class="amiga-btn small">AHEAD</button>
+                    <button onclick="dockingControl('full')" class="amiga-btn small">FULL ►►</button>
+                </div>
+            </div>
+            <div class="dock-help">
+                <p>💡 Use Arrow Keys: ← → for rudder, ↑ for engine power, ↓ for slow, Space for stop</p>
             </div>
         </div>
 

@@ -283,66 +283,467 @@ function startNavigation(targetPort, distance, fuelNeeded) {
     }, 2000);
 }
 
+// Docking Simulator - Three Phase System
+let dockingState = {
+    phase: 1, // 1=debris, 2=ships, 3=final docking
+    shipX: 50,
+    shipY: 200,
+    shipVelX: 0,
+    shipVelY: 0,
+    shipAngle: 0,
+    shipAngularVel: 0,
+    enginePower: 0,
+    rudderAngle: 0,
+    debris: [],
+    otherShips: [],
+    damage: 0,
+    dockX: 550,
+    dockY: 200,
+    phase1Distance: 0,
+    phase2Distance: 0
+};
+
 function startDocking() {
+    // Reset docking state
+    dockingState = {
+        phase: 1,
+        shipX: 50,
+        shipY: 200,
+        shipVelX: 2,
+        shipVelY: 0,
+        shipAngle: 0,
+        shipAngularVel: 0,
+        enginePower: 50,
+        rudderAngle: 0,
+        debris: [],
+        otherShips: [],
+        damage: 0,
+        dockX: 550,
+        dockY: 200,
+        phase1Distance: 0,
+        phase2Distance: 0,
+        mass: 1000,
+        drag: 0.98,
+        maxSpeed: 5
+    };
+    
+    // Generate debris for phase 1
+    for (let i = 0; i < 15; i++) {
+        dockingState.debris.push({
+            x: 100 + Math.random() * 400,
+            y: 50 + Math.random() * 300,
+            size: 10 + Math.random() * 20,
+            type: Math.floor(Math.random() * 3) // 0=barrel, 1=crate, 2=log
+        });
+    }
+    
+    // Generate other ships for phase 2
+    for (let i = 0; i < 5; i++) {
+        dockingState.otherShips.push({
+            x: 100 + Math.random() * 400,
+            y: 80 + Math.random() * 240,
+            width: 60 + Math.random() * 40,
+            height: 20 + Math.random() * 15,
+            velX: (Math.random() - 0.5) * 0.5,
+            velY: (Math.random() - 0.5) * 0.5,
+            color: ['#555', '#666', '#777', '#888'][Math.floor(Math.random() * 4)]
+        });
+    }
+    
+    updateDockingInfo();
+    runDockingSimulation();
+}
+
+function updateDockingInfo() {
+    const info = document.getElementById('nav-info');
+    let phaseText = '';
+    
+    switch(dockingState.phase) {
+        case 1:
+            phaseText = '⚠️ PHASE 1: HARBOR APPROACH - Avoid floating debris!';
+            break;
+        case 2:
+            phaseText = '🚢 PHASE 2: TRAFFIC ZONE - Navigate around other vessels!';
+            break;
+        case 3:
+            phaseText = '⚓ PHASE 3: FINAL DOCKING - Carefully align and dock!';
+            break;
+    }
+    
+    info.innerHTML = `
+        <h3>${phaseText}</h3>
+        <p>Speed: <span class="value">${Math.sqrt(dockingState.shipVelX**2 + dockingState.shipVelY**2).toFixed(1)} knots</span> | 
+        Angle: <span class="value">${Math.round(dockingState.shipAngle)}°</span> | 
+        Damage: <span class="value" style="color: ${dockingState.damage > 30 ? '#ff0000' : '#00ff00'}">${dockingState.damage}%</span></p>
+        ${dockingState.phase === 3 ? `<p>Distance to dock: <span class="value">${Math.max(0, Math.round(dockingState.dockX - dockingState.shipX - 40))}m</span></p>` : ''}
+    `;
+}
+
+function runDockingSimulation() {
     const canvas = document.getElementById('dock-canvas');
     const ctx = canvas.getContext('2d');
     
-    let shipX = 50;
-    let shipY = 200;
-    let shipSpeed = 3;
-    const dockX = 550;
-    const dockY = 200;
+    let animationFrame;
     
-    let dockingInterval = setInterval(() => {
+    function gameLoop() {
         // Clear canvas
-        ctx.fillStyle = '#001133';
+        ctx.fillStyle = '#001144';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        // Draw dock
-        ctx.fillStyle = '#8B4513';
-        ctx.fillRect(dockX - 10, 0, 30, canvas.height);
-        ctx.fillStyle = '#FFD700';
-        ctx.fillRect(dockX - 15, dockY - 20, 40, 40);
-        
-        // Draw ship
-        ctx.fillStyle = '#666';
-        ctx.fillRect(shipX, shipY - 15, 80, 30);
-        ctx.fillStyle = '#444';
-        ctx.fillRect(shipX + 30, shipY - 25, 20, 10);
-        
-        // Move ship
-        if (shipSpeed > 0 && shipX < dockX - 90) {
-            shipX += shipSpeed;
+        // Draw water effect
+        ctx.fillStyle = '#002266';
+        for (let i = 0; i < 10; i++) {
+            ctx.fillRect(0, i * 40 + (Date.now() / 100 % 40), canvas.width, 2);
         }
         
-        // Update display
-        document.getElementById('dock-speed').textContent = shipSpeed.toFixed(1);
-        document.getElementById('dock-distance').textContent = Math.max(0, Math.round(dockX - shipX - 90));
+        // Phase-specific rendering and logic
+        switch(dockingState.phase) {
+            case 1:
+                updatePhase1(ctx);
+                break;
+            case 2:
+                updatePhase2(ctx);
+                break;
+            case 3:
+                updatePhase3(ctx);
+                break;
+        }
         
-        // Check docking
-        if (shipX >= dockX - 95) {
-            clearInterval(dockingInterval);
+        // Draw player ship
+        drawPlayerShip(ctx);
+        
+        // Update physics
+        updatePhysics();
+        
+        // Update info display
+        updateDockingInfo();
+        
+        // Check phase completion
+        if (dockingState.phase === 1 && dockingState.shipX > 500) {
+            dockingState.phase = 2;
+            dockingState.shipX = 50;
+            dockingState.shipY = 200;
+            dockingState.shipVelX = 2;
+            dockingState.phase1Distance = 500;
+            showMessage('Phase 1 Complete!', 'Now navigate through ship traffic!');
+        } else if (dockingState.phase === 2 && dockingState.shipX > 500) {
+            dockingState.phase = 3;
+            dockingState.shipX = 50;
+            dockingState.shipY = 200;
+            dockingState.shipVelX = 1;
+            dockingState.shipVelY = 0;
+            dockingState.shipAngle = 0;
+            dockingState.phase2Distance = 500;
+            showMessage('Phase 2 Complete!', 'Final approach - dock carefully!');
+        }
+        
+        // Check if docked (phase 3)
+        if (dockingState.phase === 3) {
+            const distToDock = Math.abs(dockingState.shipX - (dockingState.dockX - 45));
+            const alignedY = Math.abs(dockingState.shipY - dockingState.dockY) < 15;
+            const alignedAngle = Math.abs(dockingState.shipAngle) < 5;
+            const speed = Math.sqrt(dockingState.shipVelX**2 + dockingState.shipVelY**2);
             
-            if (shipSpeed > 2) {
-                gameState.currentShip.condition -= 20;
-                showMessage('Hard Docking!', 'You docked too fast! Ship condition reduced by 20%.');
-            } else {
-                showMessage('Docked Successfully!', `Welcome to ${gameState.currentPort.name}!`);
+            if (distToDock < 10 && alignedY && alignedAngle) {
+                cancelAnimationFrame(animationFrame);
+                completeDocking(speed);
+                return;
             }
             
+            // Check collision with dock
+            if (dockingState.shipX > dockingState.dockX - 30 && !alignedY) {
+                dockingState.damage += 5;
+                dockingState.shipVelX = -Math.abs(dockingState.shipVelX) * 0.5;
+            }
+        }
+        
+        // Check if too damaged
+        if (dockingState.damage >= 100) {
+            cancelAnimationFrame(animationFrame);
+            gameState.currentShip.condition = Math.max(0, gameState.currentShip.condition - 50);
+            showMessage('Docking Failed!', 'Your ship took too much damage! Condition reduced by 50%. Repairs needed.');
             showScreen('game-screen');
             updateDisplay();
+            return;
         }
-    }, 50);
+        
+        animationFrame = requestAnimationFrame(gameLoop);
+    }
     
-    window.dockingControl = function(action) {
-        if (action === 'left') shipY -= 5;
-        if (action === 'right') shipY += 5;
-        if (action === 'slow') shipSpeed = Math.max(0, shipSpeed - 0.5);
-        if (action === 'stop') shipSpeed = 0;
-        if (action === 'go') shipSpeed = Math.min(5, shipSpeed + 0.5);
-    };
+    animationFrame = requestAnimationFrame(gameLoop);
 }
+
+function updatePhase1(ctx) {
+    // Draw and update debris
+    dockingState.debris.forEach(debris => {
+        // Draw debris based on type
+        ctx.save();
+        ctx.translate(debris.x, debris.y);
+        
+        switch(debris.type) {
+            case 0: // Barrel
+                ctx.fillStyle = '#8B4513';
+                ctx.fillRect(-debris.size/2, -debris.size/2, debris.size, debris.size);
+                ctx.fillStyle = '#654321';
+                ctx.fillRect(-debris.size/2, -debris.size/4, debris.size, debris.size/2);
+                break;
+            case 1: // Crate
+                ctx.fillStyle = '#CD853F';
+                ctx.fillRect(-debris.size/2, -debris.size/2, debris.size, debris.size);
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(-debris.size/2, -debris.size/2, debris.size, debris.size);
+                break;
+            case 2: // Log
+                ctx.fillStyle = '#8B4513';
+                ctx.fillRect(-debris.size, -debris.size/3, debris.size * 2, debris.size * 2/3);
+                break;
+        }
+        
+        ctx.restore();
+        
+        // Check collision with player
+        const dx = debris.x - dockingState.shipX - 40;
+        const dy = debris.y - dockingState.shipY;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        
+        if (dist < debris.size + 25) {
+            dockingState.damage += 2;
+            debris.x = -100; // Remove debris
+            // Impact effect
+            dockingState.shipVelX *= 0.8;
+            dockingState.shipVelY += (Math.random() - 0.5) * 0.5;
+        }
+    });
+}
+
+function updatePhase2(ctx) {
+    const canvas = document.getElementById('dock-canvas');
+    
+    // Draw and update other ships
+    dockingState.otherShips.forEach(ship => {
+        // Update position
+        ship.x += ship.velX;
+        ship.y += ship.velY;
+        
+        // Bounce off edges
+        if (ship.x < 0 || ship.x > canvas.width) ship.velX *= -1;
+        if (ship.y < 40 || ship.y > canvas.height - 40) ship.velY *= -1;
+        
+        // Draw ship
+        ctx.fillStyle = ship.color;
+        ctx.fillRect(ship.x - ship.width/2, ship.y - ship.height/2, ship.width, ship.height);
+        ctx.fillStyle = '#333';
+        ctx.fillRect(ship.x - ship.width/4, ship.y - ship.height/2 - 8, ship.width/2, 8);
+        
+        // Draw wake
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(ship.x - ship.width/2, ship.y - 5);
+        ctx.lineTo(ship.x - ship.width/2 - 15, ship.y - 10);
+        ctx.moveTo(ship.x - ship.width/2, ship.y + 5);
+        ctx.lineTo(ship.x - ship.width/2 - 15, ship.y + 10);
+        ctx.stroke();
+        
+        // Check collision with player
+        const dx = Math.abs(ship.x - dockingState.shipX - 40);
+        const dy = Math.abs(ship.y - dockingState.shipY);
+        
+        if (dx < (ship.width + 80)/2 && dy < (ship.height + 30)/2) {
+            dockingState.damage += 5;
+            // Push ships apart
+            dockingState.shipVelX *= 0.6;
+            dockingState.shipVelY += (dockingState.shipY - ship.y) * 0.02;
+            ship.velX = -ship.velX;
+            ship.velY = -ship.velY;
+        }
+    });
+}
+
+function updatePhase3(ctx) {
+    // Draw dock structure
+    ctx.fillStyle = '#654321';
+    ctx.fillRect(dockingState.dockX - 20, 0, 40, canvas.height);
+    
+    // Draw dock pilings
+    for (let i = 0; i < 5; i++) {
+        ctx.fillStyle = '#8B4513';
+        ctx.fillRect(dockingState.dockX - 15, i * 80 + 20, 30, 20);
+    }
+    
+    // Draw target docking area
+    ctx.fillStyle = 'rgba(0, 255, 0, 0.3)';
+    ctx.fillRect(dockingState.dockX - 30, dockingState.dockY - 20, 20, 40);
+    ctx.strokeStyle = '#00ff00';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(dockingState.dockX - 30, dockingState.dockY - 20, 20, 40);
+    
+    // Draw distance markers
+    for (let i = 100; i < dockingState.dockX - 50; i += 50) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, canvas.height);
+        ctx.stroke();
+        ctx.fillStyle = '#fff';
+        ctx.font = '12px Courier';
+        ctx.fillText((dockingState.dockX - i) + 'm', i + 5, 20);
+    }
+    
+    // Draw dock workers
+    for (let i = 0; i < 3; i++) {
+        ctx.fillStyle = '#ff8800';
+        ctx.fillRect(dockingState.dockX - 12, dockingState.dockY - 30 + i * 30, 8, 15);
+    }
+}
+
+function drawPlayerShip(ctx) {
+    ctx.save();
+    ctx.translate(dockingState.shipX + 40, dockingState.shipY);
+    ctx.rotate(dockingState.shipAngle * Math.PI / 180);
+    
+    // Ship hull
+    ctx.fillStyle = '#888';
+    ctx.beginPath();
+    ctx.moveTo(40, 0);
+    ctx.lineTo(-40, -15);
+    ctx.lineTo(-40, 15);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    // Ship superstructure
+    ctx.fillStyle = '#666';
+    ctx.fillRect(-10, -20, 30, 15);
+    
+    // Ship windows
+    ctx.fillStyle = '#ffff00';
+    ctx.fillRect(-5, -18, 5, 4);
+    ctx.fillRect(5, -18, 5, 4);
+    
+    // Propeller wash (when engine on)
+    if (dockingState.enginePower > 0) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(-40, -8);
+        ctx.lineTo(-50 - dockingState.enginePower/10, -12);
+        ctx.moveTo(-40, 8);
+        ctx.lineTo(-50 - dockingState.enginePower/10, 12);
+        ctx.stroke();
+    }
+    
+    // Rudder indicator
+    ctx.strokeStyle = '#ff0000';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(-35, 0);
+    ctx.lineTo(-35 - 10 * Math.cos(dockingState.rudderAngle * Math.PI / 180), 
+               -10 * Math.sin(dockingState.rudderAngle * Math.PI / 180));
+    ctx.stroke();
+    
+    ctx.restore();
+}
+
+function updatePhysics() {
+    const canvas = document.getElementById('dock-canvas');
+    
+    // Engine thrust
+    const thrust = dockingState.enginePower / 100 * 0.1;
+    const angleRad = dockingState.shipAngle * Math.PI / 180;
+    dockingState.shipVelX += Math.cos(angleRad) * thrust;
+    dockingState.shipVelY += Math.sin(angleRad) * thrust;
+    
+    // Rudder effect (only when moving)
+    const speed = Math.sqrt(dockingState.shipVelX**2 + dockingState.shipVelY**2);
+    dockingState.shipAngularVel += dockingState.rudderAngle * 0.002 * speed;
+    
+    // Angular drag
+    dockingState.shipAngularVel *= 0.95;
+    dockingState.shipAngle += dockingState.shipAngularVel;
+    
+    // Keep angle in range
+    if (dockingState.shipAngle > 180) dockingState.shipAngle -= 360;
+    if (dockingState.shipAngle < -180) dockingState.shipAngle += 360;
+    
+    // Drag
+    dockingState.shipVelX *= 0.985;
+    dockingState.shipVelY *= 0.985;
+    
+    // Speed limit
+    const currentSpeed = Math.sqrt(dockingState.shipVelX**2 + dockingState.shipVelY**2);
+    if (currentSpeed > dockingState.maxSpeed) {
+        dockingState.shipVelX *= dockingState.maxSpeed / currentSpeed;
+        dockingState.shipVelY *= dockingState.maxSpeed / currentSpeed;
+    }
+    
+    // Update position
+    dockingState.shipX += dockingState.shipVelX;
+    dockingState.shipY += dockingState.shipVelY;
+    
+    // Boundaries
+    if (dockingState.shipY < 30) {
+        dockingState.shipY = 30;
+        dockingState.shipVelY = Math.abs(dockingState.shipVelY) * 0.5;
+        dockingState.damage += 1;
+    }
+    if (dockingState.shipY > canvas.height - 30) {
+        dockingState.shipY = canvas.height - 30;
+        dockingState.shipVelY = -Math.abs(dockingState.shipVelY) * 0.5;
+        dockingState.damage += 1;
+    }
+}
+
+function completeDocking(speed) {
+    const totalDistance = dockingState.phase1Distance + dockingState.phase2Distance + (dockingState.dockX - 50);
+    
+    if (speed > 2.5) {
+        dockingState.damage += 15;
+        gameState.currentShip.condition -= dockingState.damage;
+        showMessage('Hard Docking!', `You docked too fast at ${speed.toFixed(1)} knots! Total damage: ${Math.round(dockingState.damage)}%. Ship condition reduced.`);
+    } else if (dockingState.damage > 20) {
+        gameState.currentShip.condition -= dockingState.damage;
+        showMessage('Docking Complete', `Docked but with ${Math.round(dockingState.damage)}% damage from collisions. Ship condition reduced.`);
+    } else {
+        showMessage('Perfect Docking!', `Excellent work, Captain! Docked safely at ${speed.toFixed(1)} knots with minimal damage. Welcome to ${gameState.currentPort.name}!`);
+    }
+    
+    showScreen('game-screen');
+    updateDisplay();
+}
+
+window.dockingControl = function(action) {
+    switch(action) {
+        case 'left':
+            dockingState.rudderAngle = Math.max(-30, dockingState.rudderAngle - 5);
+            break;
+        case 'right':
+            dockingState.rudderAngle = Math.min(30, dockingState.rudderAngle + 5);
+            break;
+        case 'center':
+            dockingState.rudderAngle = 0;
+            break;
+        case 'slow':
+            dockingState.enginePower = Math.max(0, dockingState.enginePower - 10);
+            break;
+        case 'stop':
+            dockingState.enginePower = 0;
+            break;
+        case 'go':
+            dockingState.enginePower = Math.min(100, dockingState.enginePower + 10);
+            break;
+        case 'full':
+            dockingState.enginePower = 100;
+            break;
+        case 'reverse':
+            dockingState.enginePower = Math.max(-50, dockingState.enginePower - 10);
+            break;
+    }
+};
 
 function cancelNavigation() {
     gameState.navigating = false;
@@ -613,11 +1014,40 @@ function closeMessage() {
 // Keyboard controls for docking
 document.addEventListener('keydown', (e) => {
     if (document.getElementById('docking').classList.contains('active')) {
-        if (e.key === 'ArrowLeft') dockingControl('left');
-        if (e.key === 'ArrowRight') dockingControl('right');
-        if (e.key === 'ArrowDown') dockingControl('slow');
-        if (e.key === 'ArrowUp') dockingControl('go');
-        if (e.key === ' ') dockingControl('stop');
+        switch(e.key) {
+            case 'ArrowLeft':
+                e.preventDefault();
+                dockingControl('left');
+                break;
+            case 'ArrowRight':
+                e.preventDefault();
+                dockingControl('right');
+                break;
+            case 'ArrowDown':
+                e.preventDefault();
+                dockingControl('slow');
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                dockingControl('go');
+                break;
+            case ' ':
+                e.preventDefault();
+                dockingControl('stop');
+                break;
+            case 'c':
+            case 'C':
+                dockingControl('center');
+                break;
+            case 'r':
+            case 'R':
+                dockingControl('reverse');
+                break;
+            case 'f':
+            case 'F':
+                dockingControl('full');
+                break;
+        }
     }
 });
 

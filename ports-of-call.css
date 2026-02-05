@@ -269,8 +269,30 @@ canvas {
 }
 
 .dock-controls {
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
     margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.control-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.control-section label {
+    color: #ffcc00;
+    font-weight: bold;
+    text-align: center;
+}
+
+.dock-help {
+    text-align: center;
+    margin-top: 10px;
+    color: #00ff00;
+    font-size: 0.9em;
 }
 
 /* Messages */

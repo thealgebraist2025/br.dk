@@ -1,0 +1,727 @@
+{
+  "generated_at": "2026-02-03T19:49:44.803615",
+  "model": "segmind/tiny-sd",
+  "device": "mps",
+  "images": [
+    {
+      "filename": "logo.png",
+      "prompt": "vintage nautical logo, RMS Titanic ship silhouette, art deco style, gold and navy blue, ornate border, maritime emblem, professional design, clean background",
+      "category": "logo"
+    },
+    {
+      "filename": "captain_confident.png",
+      "prompt": "confident ship captain portrait, naval uniform, dignified, determined expression, 1912 era, oil painting style, heroic",
+      "category": "captain"
+    },
+    {
+      "filename": "captain_worried.png",
+      "prompt": "worried ship captain portrait, naval uniform, concerned expression, 1912 era, oil painting style, anxious",
+      "category": "captain"
+    },
+    {
+      "filename": "captain_desperate.png",
+      "prompt": "desperate ship captain portrait, naval uniform, panic expression, 1912 era, oil painting style, fear",
+      "category": "captain"
+    },
+    {
+      "filename": "captain_victorious.png",
+      "prompt": "triumphant ship captain portrait, naval uniform, proud smile, 1912 era, oil painting style, celebrating",
+      "category": "captain"
+    },
+    {
+      "filename": "victory_01_harbor.png",
+      "prompt": "New York harbor 1912, Statue of Liberty, triumphant ocean liner arriving, celebration, vintage photograph, sepia tone",
+      "category": "victory"
+    },
+    {
+      "filename": "victory_02_celebration.png",
+      "prompt": "ship crew celebrating on deck, confetti, cheering people, 1912 era, vintage photograph, joyful",
+      "category": "victory"
+    },
+    {
+      "filename": "victory_03_newspaper.png",
+      "prompt": "vintage newspaper headline TITANIC ARRIVES SAFELY, 1912 typography, historic front page",
+      "category": "victory"
+    },
+    {
+      "filename": "defeat_01_sinking.png",
+      "prompt": "ocean liner sinking stern first, dramatic angle, night scene, moonlight, tragic, cinematic, 1912",
+      "category": "defeat"
+    },
+    {
+      "filename": "defeat_02_lifeboats.png",
+      "prompt": "lifeboats in dark ocean, survivors, distant sinking ship, somber mood, dramatic lighting, tragic scene",
+      "category": "defeat"
+    },
+    {
+      "filename": "defeat_03_memorial.png",
+      "prompt": "maritime memorial monument, names engraved, flowers, solemn, respectful, historic",
+      "category": "defeat"
+    },
+    {
+      "filename": "defeat_04_underwater.png",
+      "prompt": "sunken ship wreckage on ocean floor, deep sea, ethereal lighting, peaceful yet tragic",
+      "category": "defeat"
+    },
+    {
+      "filename": "weather_calm.png",
+      "prompt": "calm ocean surface, clear sky, peaceful waves, daylight, serene maritime scene",
+      "category": "weather"
+    },
+    {
+      "filename": "weather_cloudy.png",
+      "prompt": "cloudy ocean sky, overcast, grey clouds, choppy waves, moody atmosphere",
+      "category": "weather"
+    },
+    {
+      "filename": "weather_fog.png",
+      "prompt": "thick fog over ocean, mysterious atmosphere, limited visibility, eerie maritime scene",
+      "category": "weather"
+    },
+    {
+      "filename": "weather_storm.png",
+      "prompt": "violent ocean storm, massive waves, dark clouds, lightning, dramatic weather, dangerous seas",
+      "category": "weather"
+    },
+    {
+      "filename": "story_01_stage_1.png",
+      "prompt": "ocean liner departing Southampton harbor, 1912, vintage photograph style, crowds waving, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_1"
+    },
+    {
+      "filename": "story_01_stage_2.png",
+      "prompt": "ship at sea, calm ocean, crew on deck working, routine voyage, daylight, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_1"
+    },
+    {
+      "filename": "story_01_stage_3.png",
+      "prompt": "crew member spotting distant iceberg through binoculars, alert expression, dramatic moment, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_1"
+    },
+    {
+      "filename": "story_01_stage_4.png",
+      "prompt": "massive iceberg ahead, ship turning, tense moment, danger imminent, cinematic angle, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_1"
+    },
+    {
+      "filename": "story_01_stage_5.png",
+      "prompt": "ship scraping against iceberg, ice chunks falling, collision impact, dramatic lighting, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_1"
+    },
+    {
+      "filename": "story_01_stage_6.png",
+      "prompt": "crew assessing damage below deck, water flooding compartments, emergency situation, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_1"
+    },
+    {
+      "filename": "story_01_stage_7.png",
+      "prompt": "lifeboats being loaded, organized evacuation, night scene, urgent atmosphere, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_1"
+    },
+    {
+      "filename": "story_01_stage_8.png",
+      "prompt": "ship sinking stern rising, final moments, tragic scene, moonlit ocean, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_1"
+    },
+    {
+      "filename": "story_02_stage_1.png",
+      "prompt": "ship boiler room, furnaces glowing bright, coal piles abundant, workers shoveling, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_2"
+    },
+    {
+      "filename": "story_02_stage_2.png",
+      "prompt": "coal supplies dwindling, workers concerned, monitoring remaining fuel, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_2"
+    },
+    {
+      "filename": "story_02_stage_3.png",
+      "prompt": "furnace fires weakening, reduced steam pressure, worried engineers, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_2"
+    },
+    {
+      "filename": "story_02_stage_4.png",
+      "prompt": "ship slowing down, crew rationing coal carefully, tense atmosphere, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_2"
+    },
+    {
+      "filename": "story_02_stage_5.png",
+      "prompt": "nearly empty coal bunkers, desperate situation, critical fuel shortage, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_2"
+    },
+    {
+      "filename": "story_02_stage_6.png",
+      "prompt": "ship dead in water, no power, drifting, emergency situation, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_2"
+    },
+    {
+      "filename": "story_02_stage_7.png",
+      "prompt": "crew attempting to burn furniture and wood for fuel, desperation, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_2"
+    },
+    {
+      "filename": "story_02_stage_8.png",
+      "prompt": "ship disabled and vulnerable, awaiting rescue, stranded at sea, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_2"
+    },
+    {
+      "filename": "story_03_stage_1.png",
+      "prompt": "dark storm clouds gathering on horizon, ominous sky, rough seas ahead, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_3"
+    },
+    {
+      "filename": "story_03_stage_2.png",
+      "prompt": "ship entering storm system, waves increasing, wind picking up, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_3"
+    },
+    {
+      "filename": "story_03_stage_3.png",
+      "prompt": "violent waves crashing over deck, crew struggling, extreme weather, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_3"
+    },
+    {
+      "filename": "story_03_stage_4.png",
+      "prompt": "lightning striking near ship, torrential rain, dangerous conditions, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_3"
+    },
+    {
+      "filename": "story_03_stage_5.png",
+      "prompt": "structural damage to superstructure, windows breaking, chaos on deck, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_3"
+    },
+    {
+      "filename": "story_03_stage_6.png",
+      "prompt": "flooding in lower decks, pumps working overtime, water rising, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_3"
+    },
+    {
+      "filename": "story_03_stage_7.png",
+      "prompt": "ship listing heavily, severe damage, critical situation, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_3"
+    },
+    {
+      "filename": "story_03_stage_8.png",
+      "prompt": "ship breaking apart in storm, catastrophic failure, tragic end, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_3"
+    },
+    {
+      "filename": "story_04_stage_1.png",
+      "prompt": "engine room operating normally, machinery humming, routine operations, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_4"
+    },
+    {
+      "filename": "story_04_stage_2.png",
+      "prompt": "small fire starting near coal bunker, smoke visible, workers noticing, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_4"
+    },
+    {
+      "filename": "story_04_stage_3.png",
+      "prompt": "fire spreading to machinery, crew fighting flames, emergency response, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_4"
+    },
+    {
+      "filename": "story_04_stage_4.png",
+      "prompt": "major blaze in engine room, thick smoke, crew evacuating, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_4"
+    },
+    {
+      "filename": "story_04_stage_5.png",
+      "prompt": "fire out of control, explosions, critical danger, abandon engine room, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_4"
+    },
+    {
+      "filename": "story_04_stage_6.png",
+      "prompt": "ship losing power as fire damages systems, smoke billowing from funnels, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_4"
+    },
+    {
+      "filename": "story_04_stage_7.png",
+      "prompt": "fire spreading to other compartments, ship-wide emergency, evacuation, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_4"
+    },
+    {
+      "filename": "story_04_stage_8.png",
+      "prompt": "ship consumed by fire and sinking, crew in lifeboats, total loss, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_4"
+    },
+    {
+      "filename": "story_05_stage_1.png",
+      "prompt": "ship navigating through light mist, reduced visibility, crew alert, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_5"
+    },
+    {
+      "filename": "story_05_stage_2.png",
+      "prompt": "thick fog engulfing ship, visibility near zero, dangerous navigation, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_5"
+    },
+    {
+      "filename": "story_05_stage_3.png",
+      "prompt": "crew using foghorn constantly, listening for other ships, tense atmosphere, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_5"
+    },
+    {
+      "filename": "story_05_stage_4.png",
+      "prompt": "nearly colliding with another vessel in fog, close call, dramatic moment, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_5"
+    },
+    {
+      "filename": "story_05_stage_5.png",
+      "prompt": "ship going off course, navigation errors, crew confused about position, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_5"
+    },
+    {
+      "filename": "story_05_stage_6.png",
+      "prompt": "running aground on underwater rocks, grinding impact, hull breach, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_5"
+    },
+    {
+      "filename": "story_05_stage_7.png",
+      "prompt": "ship stuck and taking on water, fog clearing to reveal rocky coast, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_5"
+    },
+    {
+      "filename": "story_05_stage_8.png",
+      "prompt": "ship sinking near shore, evacuation to land, stranded vessel, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_5"
+    },
+    {
+      "filename": "story_06_stage_1.png",
+      "prompt": "ship construction showing rivets and hull plates, quality inspection, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_6"
+    },
+    {
+      "filename": "story_06_stage_2.png",
+      "prompt": "small crack appearing in hull plates, minor concern, being monitored, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_6"
+    },
+    {
+      "filename": "story_06_stage_3.png",
+      "prompt": "crack widening under ocean pressure, structural stress visible, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_6"
+    },
+    {
+      "filename": "story_06_stage_4.png",
+      "prompt": "rivets popping from hull seams, crew hearing pinging sounds, alarm, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_6"
+    },
+    {
+      "filename": "story_06_stage_5.png",
+      "prompt": "major hull breach from structural failure, water rushing in, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_6"
+    },
+    {
+      "filename": "story_06_stage_6.png",
+      "prompt": "multiple compartments flooding, bulkheads failing, cascading failure, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_6"
+    },
+    {
+      "filename": "story_06_stage_7.png",
+      "prompt": "ship breaking in half from structural weakness, catastrophic failure, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_6"
+    },
+    {
+      "filename": "story_06_stage_8.png",
+      "prompt": "both halves sinking separately, complete structural collapse, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_6"
+    },
+    {
+      "filename": "story_07_stage_1.png",
+      "prompt": "crew looking disgruntled during morning inspection, tension building, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_7"
+    },
+    {
+      "filename": "story_07_stage_2.png",
+      "prompt": "crew members arguing with officers, morale declining, conflict brewing, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_7"
+    },
+    {
+      "filename": "story_07_stage_3.png",
+      "prompt": "work slowdown, crew refusing orders, officers losing control, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_7"
+    },
+    {
+      "filename": "story_07_stage_4.png",
+      "prompt": "full mutiny, crew taking control of bridge, captain locked up, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_7"
+    },
+    {
+      "filename": "story_07_stage_5.png",
+      "prompt": "ship veering off course, inexperienced crew at controls, chaos, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_7"
+    },
+    {
+      "filename": "story_07_stage_6.png",
+      "prompt": "mutineers fighting among themselves, no one in charge, disorder, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_7"
+    },
+    {
+      "filename": "story_07_stage_7.png",
+      "prompt": "ship neglected and drifting into danger, collision imminent, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_7"
+    },
+    {
+      "filename": "story_07_stage_8.png",
+      "prompt": "ship sinking due to negligence and lack of control, tragic chaos, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_7"
+    },
+    {
+      "filename": "story_08_stage_1.png",
+      "prompt": "ship sailing normally under clear skies, routine voyage, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_8"
+    },
+    {
+      "filename": "story_08_stage_2.png",
+      "prompt": "strange atmospheric phenomena, unusual lights, crew confused, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_8"
+    },
+    {
+      "filename": "story_08_stage_3.png",
+      "prompt": "navigation instruments malfunctioning, compass spinning wildly, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_8"
+    },
+    {
+      "filename": "story_08_stage_4.png",
+      "prompt": "crew experiencing time distortions, clocks running backwards, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_8"
+    },
+    {
+      "filename": "story_08_stage_5.png",
+      "prompt": "ship entering mysterious fog bank, supernatural atmosphere, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_8"
+    },
+    {
+      "filename": "story_08_stage_6.png",
+      "prompt": "ship fading from view, becoming translucent, otherworldly scene, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_8"
+    },
+    {
+      "filename": "story_08_stage_7.png",
+      "prompt": "last transmission received, garbled and strange, then silence, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_8"
+    },
+    {
+      "filename": "story_08_stage_8.png",
+      "prompt": "empty ocean where ship was, no wreckage, complete mystery, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_8"
+    },
+    {
+      "filename": "story_09_stage_1.png",
+      "prompt": "ship's hospital, clean and orderly, doctor examining healthy crew, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_9"
+    },
+    {
+      "filename": "story_09_stage_2.png",
+      "prompt": "first patient showing symptoms, doctor concerned, quarantine starting, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_9"
+    },
+    {
+      "filename": "story_09_stage_3.png",
+      "prompt": "multiple crew members falling ill, makeshift hospital ward, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_9"
+    },
+    {
+      "filename": "story_09_stage_4.png",
+      "prompt": "epidemic spreading rapidly, overwhelmed medical staff, many sick, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_9"
+    },
+    {
+      "filename": "story_09_stage_5.png",
+      "prompt": "crew too weak to operate ship, critical systems failing, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_9"
+    },
+    {
+      "filename": "story_09_stage_6.png",
+      "prompt": "quarantine flags raised, ship becoming ghost ship, desperate situation, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_9"
+    },
+    {
+      "filename": "story_09_stage_7.png",
+      "prompt": "ship drifting helplessly, crew dying, tragic plague ship, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_9"
+    },
+    {
+      "filename": "story_09_stage_8.png",
+      "prompt": "ship found derelict, crew dead, maritime tragedy, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_9"
+    },
+    {
+      "filename": "story_10_stage_1.png",
+      "prompt": "ship sailing peacefully, unaware of danger below, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_10"
+    },
+    {
+      "filename": "story_10_stage_2.png",
+      "prompt": "periscope spotted in distance, crew raising alarm, military threat, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_10"
+    },
+    {
+      "filename": "story_10_stage_3.png",
+      "prompt": "submarine surfacing, crew identifying threat, panic spreading, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_10"
+    },
+    {
+      "filename": "story_10_stage_4.png",
+      "prompt": "submarine firing torpedo, crew watching trail approach, terror, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_10"
+    },
+    {
+      "filename": "story_10_stage_5.png",
+      "prompt": "torpedo striking hull, massive explosion, direct hit, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_10"
+    },
+    {
+      "filename": "story_10_stage_6.png",
+      "prompt": "huge hole in ship's side, flooding catastrophic, sinking rapidly, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_10"
+    },
+    {
+      "filename": "story_10_stage_7.png",
+      "prompt": "crew abandoning ship in panic, submarine watching, warfare tragedy, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_10"
+    },
+    {
+      "filename": "story_10_stage_8.png",
+      "prompt": "ship sinking quickly from torpedo damage, wartime casualty, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_10"
+    },
+    {
+      "filename": "story_11_stage_1.png",
+      "prompt": "crew spotting distress signals from another ship, deciding to help, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_11"
+    },
+    {
+      "filename": "story_11_stage_2.png",
+      "prompt": "ship changing course to assist, crew preparing rescue equipment, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_11"
+    },
+    {
+      "filename": "story_11_stage_3.png",
+      "prompt": "approaching damaged vessel, seeing survivors in lifeboats, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_11"
+    },
+    {
+      "filename": "story_11_stage_4.png",
+      "prompt": "attempting to take survivors aboard in rough seas, difficult rescue, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_11"
+    },
+    {
+      "filename": "story_11_stage_5.png",
+      "prompt": "rescue ship struck by debris from sinking vessel, damage sustained, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_11"
+    },
+    {
+      "filename": "story_11_stage_6.png",
+      "prompt": "rescue ship now also damaged and taking on water, crisis worsening, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_11"
+    },
+    {
+      "filename": "story_11_stage_7.png",
+      "prompt": "both ships in distress, combined crews in lifeboats, double tragedy, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_11"
+    },
+    {
+      "filename": "story_11_stage_8.png",
+      "prompt": "both vessels lost, survivors awaiting rescue, humanitarian disaster, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_11"
+    },
+    {
+      "filename": "story_12_stage_1.png",
+      "prompt": "ship sailing through calm waters, routine navigation, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_12"
+    },
+    {
+      "filename": "story_12_stage_2.png",
+      "prompt": "ocean current changing, ship pulled slightly off course, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_12"
+    },
+    {
+      "filename": "story_12_stage_3.png",
+      "prompt": "whirlpool forming ahead, crew noticing strange water movement, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_12"
+    },
+    {
+      "filename": "story_12_stage_4.png",
+      "prompt": "ship caught in vortex edge, struggling against current, alarm, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_12"
+    },
+    {
+      "filename": "story_12_stage_5.png",
+      "prompt": "ship spiraling into whirlpool, unable to escape, engines at full, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_12"
+    },
+    {
+      "filename": "story_12_stage_6.png",
+      "prompt": "ship tilting as vortex pulls it down, water spinning violently, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_12"
+    },
+    {
+      "filename": "story_12_stage_7.png",
+      "prompt": "ship descending into maelstrom center, crew holding on, terror, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_12"
+    },
+    {
+      "filename": "story_12_stage_8.png",
+      "prompt": "ship disappearing into vortex depths, swallowed by ocean, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_12"
+    },
+    {
+      "filename": "story_13_stage_1.png",
+      "prompt": "electrical storm approaching, lightning in distance, crew concerned, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_13"
+    },
+    {
+      "filename": "story_13_stage_2.png",
+      "prompt": "storm intensifying, frequent lightning, ship in danger zone, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_13"
+    },
+    {
+      "filename": "story_13_stage_3.png",
+      "prompt": "lightning striking radio mast, electrical surge, sparks flying, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_13"
+    },
+    {
+      "filename": "story_13_stage_4.png",
+      "prompt": "electrical systems failing, fires starting from overload, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_13"
+    },
+    {
+      "filename": "story_13_stage_5.png",
+      "prompt": "multiple lightning strikes hitting ship, catastrophic damage, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_13"
+    },
+    {
+      "filename": "story_13_stage_6.png",
+      "prompt": "ship's bridge destroyed by lightning, command center lost, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_13"
+    },
+    {
+      "filename": "story_13_stage_7.png",
+      "prompt": "fires spreading from electrical damage, crew overwhelmed, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_13"
+    },
+    {
+      "filename": "story_13_stage_8.png",
+      "prompt": "ship burning and sinking from lightning catastrophe, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_13"
+    },
+    {
+      "filename": "story_14_stage_1.png",
+      "prompt": "ship in rough seas, large waves but manageable, crew vigilant, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_14"
+    },
+    {
+      "filename": "story_14_stage_2.png",
+      "prompt": "crew spotting massive wave approaching, wall of water ahead, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_14"
+    },
+    {
+      "filename": "story_14_stage_3.png",
+      "prompt": "rogue wave towering over ship, unprecedented size, terror, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_14"
+    },
+    {
+      "filename": "story_14_stage_4.png",
+      "prompt": "wave striking ship broadside, massive impact, ship rolling, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_14"
+    },
+    {
+      "filename": "story_14_stage_5.png",
+      "prompt": "ship nearly capsizing from wave impact, extreme list, chaos, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_14"
+    },
+    {
+      "filename": "story_14_stage_6.png",
+      "prompt": "massive flooding from wave damage, multiple hull breaches, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_14"
+    },
+    {
+      "filename": "story_14_stage_7.png",
+      "prompt": "ship unable to recover, capsized and sinking, crew in water, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_14"
+    },
+    {
+      "filename": "story_14_stage_8.png",
+      "prompt": "upside-down hull sinking beneath waves, total loss, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_14"
+    },
+    {
+      "filename": "story_15_stage_1.png",
+      "prompt": "suspicious crew member lurking in shadows, plotting sabotage, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_15"
+    },
+    {
+      "filename": "story_15_stage_2.png",
+      "prompt": "saboteur tampering with critical ship systems at night, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_15"
+    },
+    {
+      "filename": "story_15_stage_3.png",
+      "prompt": "explosives planted in strategic locations, timed devices, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_15"
+    },
+    {
+      "filename": "story_15_stage_4.png",
+      "prompt": "first explosion in cargo hold, unexpected blast, confusion, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_15"
+    },
+    {
+      "filename": "story_15_stage_5.png",
+      "prompt": "multiple explosions throughout ship, coordinated attack, panic, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_15"
+    },
+    {
+      "filename": "story_15_stage_6.png",
+      "prompt": "ship's structure compromised by sabotage, critical damage, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_15"
+    },
+    {
+      "filename": "story_15_stage_7.png",
+      "prompt": "crew discovering saboteur too late, ship doomed, manhunt, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_15"
+    },
+    {
+      "filename": "story_15_stage_8.png",
+      "prompt": "ship sinking from sabotage damage, criminal tragedy, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_15"
+    },
+    {
+      "filename": "story_16_stage_1.png",
+      "prompt": "ship setting sail, ominous signs ignored, overconfident departure, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_16"
+    },
+    {
+      "filename": "story_16_stage_2.png",
+      "prompt": "minor iceberg graze causing small leak, crew unconcerned, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_16"
+    },
+    {
+      "filename": "story_16_stage_3.png",
+      "prompt": "coal running low due to detour around ice field, compounding problems, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_16"
+    },
+    {
+      "filename": "story_16_stage_4.png",
+      "prompt": "storm hitting damaged ship, multiple stresses, situation worsening, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_16"
+    },
+    {
+      "filename": "story_16_stage_5.png",
+      "prompt": "fire breaking out while ship fights storm, crisis multiplying, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_16"
+    },
+    {
+      "filename": "story_16_stage_6.png",
+      "prompt": "crew morale collapsing, mutiny during emergency, total chaos, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_16"
+    },
+    {
+      "filename": "story_16_stage_7.png",
+      "prompt": "all systems failing simultaneously, perfect storm of disasters, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_16"
+    },
+    {
+      "filename": "story_16_stage_8.png",
+      "prompt": "ship succumbing to combined catastrophes, inevitable doom, RMS Titanic era, 1912, dramatic maritime scene, cinematic lighting, detailed, high quality",
+      "category": "storyline_16"
+    }
+  ]
+}
