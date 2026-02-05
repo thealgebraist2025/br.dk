@@ -304,51 +304,26 @@ let dockingState = {
 };
 
 function startDocking() {
-    // Reset docking state
+    // Reset docking state - simplified to just final docking
     dockingState = {
-        phase: 1,
+        phase: 3, // Skip to final docking only
         shipX: 50,
         shipY: 200,
-        shipVelX: 2,
+        shipVelX: 1,
         shipVelY: 0,
         shipAngle: 0,
         shipAngularVel: 0,
-        enginePower: 50,
+        enginePower: 30,
         rudderAngle: 0,
-        debris: [],
-        otherShips: [],
         damage: 0,
         dockX: 550,
         dockY: 200,
-        phase1Distance: 0,
-        phase2Distance: 0,
         mass: 1000,
         drag: 0.98,
-        maxSpeed: 5
+        maxSpeed: 4,
+        shipLength: 80,
+        shipWidth: 10
     };
-    
-    // Generate debris for phase 1
-    for (let i = 0; i < 15; i++) {
-        dockingState.debris.push({
-            x: 100 + Math.random() * 400,
-            y: 50 + Math.random() * 300,
-            size: 10 + Math.random() * 20,
-            type: Math.floor(Math.random() * 3) // 0=barrel, 1=crate, 2=log
-        });
-    }
-    
-    // Generate other ships for phase 2
-    for (let i = 0; i < 5; i++) {
-        dockingState.otherShips.push({
-            x: 100 + Math.random() * 400,
-            y: 80 + Math.random() * 240,
-            width: 60 + Math.random() * 40,
-            height: 20 + Math.random() * 15,
-            velX: (Math.random() - 0.5) * 0.5,
-            velY: (Math.random() - 0.5) * 0.5,
-            color: ['#555', '#666', '#777', '#888'][Math.floor(Math.random() * 4)]
-        });
-    }
     
     updateDockingInfo();
     runDockingSimulation();
@@ -356,26 +331,17 @@ function startDocking() {
 
 function updateDockingInfo() {
     const info = document.getElementById('nav-info');
-    let phaseText = '';
-    
-    switch(dockingState.phase) {
-        case 1:
-            phaseText = '⚠️ PHASE 1: HARBOR APPROACH - Avoid floating debris!';
-            break;
-        case 2:
-            phaseText = '🚢 PHASE 2: TRAFFIC ZONE - Navigate around other vessels!';
-            break;
-        case 3:
-            phaseText = '⚓ PHASE 3: FINAL DOCKING - Carefully align and dock!';
-            break;
-    }
+    const speed = Math.sqrt(dockingState.shipVelX**2 + dockingState.shipVelY**2);
+    const distToDock = Math.max(0, Math.round(dockingState.dockX - dockingState.shipX - dockingState.shipLength/2));
     
     info.innerHTML = `
-        <h3>${phaseText}</h3>
-        <p>Speed: <span class="value">${Math.sqrt(dockingState.shipVelX**2 + dockingState.shipVelY**2).toFixed(1)} knots</span> | 
-        Angle: <span class="value">${Math.round(dockingState.shipAngle)}°</span> | 
-        Damage: <span class="value" style="color: ${dockingState.damage > 30 ? '#ff0000' : '#00ff00'}">${dockingState.damage}%</span></p>
-        ${dockingState.phase === 3 ? `<p>Distance to dock: <span class="value">${Math.max(0, Math.round(dockingState.dockX - dockingState.shipX - 40))}m</span></p>` : ''}
+        <h3>⚓ DOCKING PROCEDURE - Carefully align and dock your vessel</h3>
+        <p>Speed: <span class="value">${speed.toFixed(1)} knots</span> | 
+        Heading: <span class="value">${Math.round(dockingState.shipAngle)}°</span> | 
+        Distance: <span class="value">${distToDock}m</span></p>
+        <p>Engine: <span class="value">${dockingState.enginePower}%</span> | 
+        Rudder: <span class="value">${dockingState.rudderAngle}°</span></p>
+        <p class="hint">💡 Approach slowly (under 2 knots), align straight (0°), and dock gently!</p>
     `;
 }
 
@@ -396,18 +362,8 @@ function runDockingSimulation() {
             ctx.fillRect(0, i * 40 + (Date.now() / 100 % 40), canvas.width, 2);
         }
         
-        // Phase-specific rendering and logic
-        switch(dockingState.phase) {
-            case 1:
-                updatePhase1(ctx);
-                break;
-            case 2:
-                updatePhase2(ctx);
-                break;
-            case 3:
-                updatePhase3(ctx);
-                break;
-        }
+        // Draw docking scene
+        updatePhase3(ctx);
         
         // Draw player ship
         drawPlayerShip(ctx);
@@ -418,50 +374,32 @@ function runDockingSimulation() {
         // Update info display
         updateDockingInfo();
         
-        // Check phase completion
-        if (dockingState.phase === 1 && dockingState.shipX > 500) {
-            dockingState.phase = 2;
-            dockingState.shipX = 50;
-            dockingState.shipY = 200;
-            dockingState.shipVelX = 2;
-            dockingState.phase1Distance = 500;
-            showMessage('Phase 1 Complete!', 'Now navigate through ship traffic!');
-        } else if (dockingState.phase === 2 && dockingState.shipX > 500) {
-            dockingState.phase = 3;
-            dockingState.shipX = 50;
-            dockingState.shipY = 200;
-            dockingState.shipVelX = 1;
-            dockingState.shipVelY = 0;
-            dockingState.shipAngle = 0;
-            dockingState.phase2Distance = 500;
-            showMessage('Phase 2 Complete!', 'Final approach - dock carefully!');
+        // Check if docked
+        const distToDock = dockingState.dockX - dockingState.shipX - dockingState.shipLength/2;
+        const alignedY = Math.abs(dockingState.shipY - dockingState.dockY) < 20;
+        const alignedAngle = Math.abs(dockingState.shipAngle) < 10;
+        const speed = Math.sqrt(dockingState.shipVelX**2 + dockingState.shipVelY**2);
+        
+        if (distToDock < 5 && distToDock > -5 && alignedY && alignedAngle) {
+            cancelAnimationFrame(animationFrame);
+            completeDocking(speed);
+            return;
         }
         
-        // Check if docked (phase 3)
-        if (dockingState.phase === 3) {
-            const distToDock = Math.abs(dockingState.shipX - (dockingState.dockX - 45));
-            const alignedY = Math.abs(dockingState.shipY - dockingState.dockY) < 15;
-            const alignedAngle = Math.abs(dockingState.shipAngle) < 5;
-            const speed = Math.sqrt(dockingState.shipVelX**2 + dockingState.shipVelY**2);
-            
-            if (distToDock < 10 && alignedY && alignedAngle) {
-                cancelAnimationFrame(animationFrame);
-                completeDocking(speed);
-                return;
-            }
-            
-            // Check collision with dock
-            if (dockingState.shipX > dockingState.dockX - 30 && !alignedY) {
-                dockingState.damage += 5;
-                dockingState.shipVelX = -Math.abs(dockingState.shipVelX) * 0.5;
+        // Check collision with dock (too close without proper alignment)
+        if (dockingState.shipX + dockingState.shipLength/2 > dockingState.dockX - 20) {
+            if (!alignedY || !alignedAngle) {
+                dockingState.damage += 3;
+                dockingState.shipVelX = -Math.abs(dockingState.shipVelX) * 0.8;
+                dockingState.shipVelY *= 0.5;
             }
         }
         
         // Check if too damaged
-        if (dockingState.damage >= 100) {
+        if (dockingState.damage >= 50) {
             cancelAnimationFrame(animationFrame);
-            gameState.currentShip.condition = Math.max(0, gameState.currentShip.condition - 50);
-            showMessage('Docking Failed!', 'Your ship took too much damage! Condition reduced by 50%. Repairs needed.');
+            gameState.currentShip.condition = Math.max(0, gameState.currentShip.condition - 30);
+            showMessage('Docking Failed!', 'Your ship took too much damage! Condition reduced by 30%. Repairs needed.');
             showScreen('game-screen');
             updateDisplay();
             return;
@@ -572,12 +510,13 @@ function updatePhase3(ctx) {
         ctx.fillRect(dockingState.dockX - 15, i * 80 + 20, 30, 20);
     }
     
-    // Draw target docking area
+    // Draw target docking area - sized for ship
+    const targetHeight = 50;
     ctx.fillStyle = 'rgba(0, 255, 0, 0.3)';
-    ctx.fillRect(dockingState.dockX - 30, dockingState.dockY - 20, 20, 40);
+    ctx.fillRect(dockingState.dockX - 30, dockingState.dockY - targetHeight/2, 20, targetHeight);
     ctx.strokeStyle = '#00ff00';
     ctx.lineWidth = 3;
-    ctx.strokeRect(dockingState.dockX - 30, dockingState.dockY - 20, 20, 40);
+    ctx.strokeRect(dockingState.dockX - 30, dockingState.dockY - targetHeight/2, 20, targetHeight);
     
     // Draw distance markers
     for (let i = 100; i < dockingState.dockX - 50; i += 50) {
@@ -597,53 +536,74 @@ function updatePhase3(ctx) {
         ctx.fillStyle = '#ff8800';
         ctx.fillRect(dockingState.dockX - 12, dockingState.dockY - 30 + i * 30, 8, 15);
     }
+    
+    // Draw center line guide
+    ctx.strokeStyle = 'rgba(255,255,0,0.5)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([10, 10]);
+    ctx.beginPath();
+    ctx.moveTo(0, dockingState.dockY);
+    ctx.lineTo(dockingState.dockX - 30, dockingState.dockY);
+    ctx.stroke();
+    ctx.setLineDash([]);
 }
 
 function drawPlayerShip(ctx) {
     ctx.save();
-    ctx.translate(dockingState.shipX + 40, dockingState.shipY);
+    ctx.translate(dockingState.shipX, dockingState.shipY);
     ctx.rotate(dockingState.shipAngle * Math.PI / 180);
     
-    // Ship hull
+    const length = dockingState.shipLength;
+    const width = dockingState.shipWidth;
+    
+    // Ship hull - simple rectangle, 8:1 ratio
     ctx.fillStyle = '#888';
-    ctx.beginPath();
-    ctx.moveTo(40, 0);
-    ctx.lineTo(-40, -15);
-    ctx.lineTo(-40, 15);
-    ctx.closePath();
-    ctx.fill();
+    ctx.fillRect(-length/2, -width/2, length, width);
     ctx.strokeStyle = '#fff';
     ctx.lineWidth = 2;
+    ctx.strokeRect(-length/2, -width/2, length, width);
+    
+    // Bow (front)
+    ctx.fillStyle = '#999';
+    ctx.beginPath();
+    ctx.moveTo(length/2, 0);
+    ctx.lineTo(length/2 - 10, -width/2);
+    ctx.lineTo(length/2 - 10, width/2);
+    ctx.closePath();
+    ctx.fill();
     ctx.stroke();
     
-    // Ship superstructure
+    // Ship superstructure (bridge)
     ctx.fillStyle = '#666';
-    ctx.fillRect(-10, -20, 30, 15);
+    ctx.fillRect(-length/4, -width, length/3, width*1.5);
+    ctx.strokeRect(-length/4, -width, length/3, width*1.5);
     
-    // Ship windows
+    // Windows
     ctx.fillStyle = '#ffff00';
-    ctx.fillRect(-5, -18, 5, 4);
-    ctx.fillRect(5, -18, 5, 4);
+    for (let i = 0; i < 3; i++) {
+        ctx.fillRect(-length/4 + 5 + i*10, -width + 2, 6, 4);
+    }
     
     // Propeller wash (when engine on)
     if (dockingState.enginePower > 0) {
         ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(-40, -8);
-        ctx.lineTo(-50 - dockingState.enginePower/10, -12);
-        ctx.moveTo(-40, 8);
-        ctx.lineTo(-50 - dockingState.enginePower/10, 12);
+        ctx.moveTo(-length/2, -width/3);
+        ctx.lineTo(-length/2 - dockingState.enginePower/5, -width/2);
+        ctx.moveTo(-length/2, width/3);
+        ctx.lineTo(-length/2 - dockingState.enginePower/5, width/2);
         ctx.stroke();
     }
     
-    // Rudder indicator
+    // Rudder indicator at stern
     ctx.strokeStyle = '#ff0000';
     ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.moveTo(-35, 0);
-    ctx.lineTo(-35 - 10 * Math.cos(dockingState.rudderAngle * Math.PI / 180), 
-               -10 * Math.sin(dockingState.rudderAngle * Math.PI / 180));
+    ctx.moveTo(-length/2, 0);
+    const rudderLength = 8;
+    ctx.lineTo(-length/2 - rudderLength * Math.cos(dockingState.rudderAngle * Math.PI / 180), 
+               -rudderLength * Math.sin(dockingState.rudderAngle * Math.PI / 180));
     ctx.stroke();
     
     ctx.restore();
@@ -699,17 +659,14 @@ function updatePhysics() {
 }
 
 function completeDocking(speed) {
-    const totalDistance = dockingState.phase1Distance + dockingState.phase2Distance + (dockingState.dockX - 50);
-    
-    if (speed > 2.5) {
-        dockingState.damage += 15;
-        gameState.currentShip.condition -= dockingState.damage;
-        showMessage('Hard Docking!', `You docked too fast at ${speed.toFixed(1)} knots! Total damage: ${Math.round(dockingState.damage)}%. Ship condition reduced.`);
-    } else if (dockingState.damage > 20) {
-        gameState.currentShip.condition -= dockingState.damage;
-        showMessage('Docking Complete', `Docked but with ${Math.round(dockingState.damage)}% damage from collisions. Ship condition reduced.`);
+    if (speed > 2) {
+        dockingState.damage += 10;
+        gameState.currentShip.condition = Math.max(0, gameState.currentShip.condition - 10);
+        showMessage('Hard Docking!', `You docked too fast at ${speed.toFixed(1)} knots! Ship condition reduced by 10%.`);
+    } else if (speed > 1.5) {
+        showMessage('Docking Complete', `Docked at ${speed.toFixed(1)} knots. A bit rough, but acceptable. Welcome to ${gameState.currentPort.name}!`);
     } else {
-        showMessage('Perfect Docking!', `Excellent work, Captain! Docked safely at ${speed.toFixed(1)} knots with minimal damage. Welcome to ${gameState.currentPort.name}!`);
+        showMessage('Perfect Docking!', `Excellent work, Captain! Docked smoothly at ${speed.toFixed(1)} knots. Welcome to ${gameState.currentPort.name}!`);
     }
     
     showScreen('game-screen');
