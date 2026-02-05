@@ -151,6 +151,25 @@
             <button onclick="cancelNavigation()" class="amiga-btn">CANCEL</button>
         </div>
 
+        <!-- Docking Choice Screen -->
+        <div id="docking-choice" class="screen">
+            <h2>⚓ APPROACHING PORT</h2>
+            <div class="text-box">
+                <p>You are approaching <strong><span id="approaching-port">Port</span></strong>.</p>
+                <p>How would you like to dock?</p>
+            </div>
+            <div class="menu-box">
+                <button onclick="manualDocking()" class="amiga-btn">
+                    🎮 MANUAL DOCKING<br>
+                    <span style="font-size: 12px;">Take the helm yourself (Free)</span>
+                </button>
+                <button onclick="hirePilot()" class="amiga-btn">
+                    👨‍✈️ HIRE HARBOR PILOT<br>
+                    <span style="font-size: 12px;" id="pilot-cost">Cost: $500</span>
+                </button>
+            </div>
+        </div>
+
         <!-- Docking Screen -->
         <div id="docking" class="screen">
             <h2>DOCKING SIMULATOR</h2>

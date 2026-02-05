@@ -278,8 +278,52 @@ function startNavigation(targetPort, distance, fuelNeeded) {
         // Update cargo prices
         updateCargoMarket();
         
-        showScreen('docking');
-        startDocking();
+        // Show docking choice screen
+        showDockingChoice();
+    }, 2000);
+}
+
+function showDockingChoice() {
+    // Calculate pilot cost based on ship size
+    const shipValue = gameState.currentShip.type === 'coastal' ? 50000 :
+                      gameState.currentShip.type === 'bulk' ? 150000 :
+                      gameState.currentShip.type === 'container' ? 300000 : 500000;
+    const pilotCost = Math.round(shipValue * 0.01); // 1% of ship value
+    
+    document.getElementById('approaching-port').textContent = gameState.currentPort.name;
+    document.getElementById('pilot-cost').textContent = `Cost: $${pilotCost.toLocaleString()}`;
+    
+    showScreen('docking-choice');
+}
+
+function manualDocking() {
+    showScreen('docking');
+    startDocking();
+}
+
+function hirePilot() {
+    // Calculate pilot cost
+    const shipValue = gameState.currentShip.type === 'coastal' ? 50000 :
+                      gameState.currentShip.type === 'bulk' ? 150000 :
+                      gameState.currentShip.type === 'container' ? 300000 : 500000;
+    const pilotCost = Math.round(shipValue * 0.01);
+    
+    if (gameState.company.cash < pilotCost) {
+        showMessage('Insufficient Funds', `You need $${pilotCost.toLocaleString()} to hire a harbor pilot. You only have $${gameState.company.cash.toLocaleString()}.`);
+        return;
+    }
+    
+    // Deduct cost
+    gameState.company.cash -= pilotCost;
+    
+    // Auto-dock with perfect result
+    showMessage('Harbor Pilot Hired', 
+        `The experienced harbor pilot expertly navigates your ship to the dock.\n\n` +
+        `Cost: $${pilotCost.toLocaleString()}\n\n` +
+        `Welcome to ${gameState.currentPort.name}!`);
+    
+    showScreen('game-screen');
+    updateDisplay();
     }, 2000);
 }
 
@@ -334,10 +378,10 @@ function startDocking() {
         lateralDrag: 0.3,        // Higher drag when moving sideways
         
         // Forces
-        maxEngineForce: 0.15,    // Maximum thrust
+        maxEngineForce: 50,      // Maximum thrust (adjusted for mass scale)
         engineResponseTime: 0.1, // Engine takes time to respond
-        rudderForce: 0.008,      // Rudder effectiveness (only when moving)
-        thrusterForce: 0.03,     // Bow/stern thruster force
+        rudderForce: 2.5,        // Rudder effectiveness (only when moving)
+        thrusterForce: 10,       // Bow/stern thruster force
         
         // Environmental
         currentX: 0.02,          // Water current (small drift)
@@ -826,6 +870,10 @@ window.dockingControl = function(action) {
             break;
     }
 };
+
+// Make functions globally accessible
+window.manualDocking = manualDocking;
+window.hirePilot = hirePilot;
 
 function cancelNavigation() {
     gameState.navigating = false;
