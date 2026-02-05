@@ -966,6 +966,18 @@ function updateGameTick() {
     const gameScreen = document.getElementById('game-screen');
     if (gameScreen?.classList.contains('active')) {
         updateDisplay();
+        // Auto-refresh active content views
+        const content = document.getElementById('action-content');
+        if (content) {
+            // Check if fleet manager is showing
+            if (content.innerHTML.includes('Fleet Manager')) {
+                showFleetManager();
+            }
+            // Check if leaderboard is showing
+            else if (content.innerHTML.includes('Leaderboard')) {
+                showCompetitors();
+            }
+        }
     }
 }
 function processShipRoute(ship) {
@@ -1283,9 +1295,13 @@ function showFleetManager() {
         html += '<div style="margin: 10px 0; padding: 15px; background: rgba(255,136,0,0.1); border: 2px solid #ff8800;">';
         html += `<h3>${ship.name} (${SHIP_TYPES[ship.type].name})</h3>`;
         html += `<p><strong>Location:</strong> ${ship.currentPort.name} | `;
-        html += `<strong>Status:</strong> ${ship.status.toUpperCase()} `;
+        html += `<strong>Status:</strong> <span style="color: ${ship.status === 'idle' ? '#ffff00' : '#00ff00'}">${ship.status.toUpperCase()}</span> `;
         if (ship.status !== 'idle') {
             html += `(${Math.round(ship.progress)}%)`;
+            // Add progress bar
+            html += `<div style="background: rgba(0,0,0,0.5); height: 10px; margin: 5px 0; border-radius: 5px; overflow: hidden;">`;
+            html += `<div style="background: linear-gradient(90deg, #00ff00, #00cc00); height: 100%; width: ${ship.progress}%; transition: width 0.3s;"></div>`;
+            html += `</div>`;
         }
         html += `</p>`;
         html += `<p><strong>Fuel:</strong> ${Math.round(ship.fuel)}/${ship.fuelCapacity} | `;
