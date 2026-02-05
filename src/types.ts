@@ -29,12 +29,29 @@ interface Ship {
     condition: number;
     cargo: Record<string, number>;
     currentPort: Port;
+    route: TradeRoute | null;
+    status: 'idle' | 'loading' | 'traveling' | 'unloading';
+    progress: number;
+}
+
+interface TradeRoute {
+    buyPort: Port;
+    buyCargoId: string;
+    buyQuantity: number;
+    sellPort: Port;
+    repeat: boolean;
 }
 
 interface Company {
     name: string;
     cash: number;
     founded: Date;
+    isPlayer: boolean;
+}
+
+interface Competitor {
+    company: Company;
+    ships: Ship[];
 }
 
 interface GameState {
@@ -45,6 +62,8 @@ interface GameState {
     currentPort: Port | null;
     navigating: boolean;
     navigationTarget: Port | null;
+    competitors: Competitor[];
+    gameSpeed: number;
 }
 
 interface CargoType {

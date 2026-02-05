@@ -58,6 +58,18 @@ const CARGO_TYPES = [
     { id: 'machinery', name: 'Machinery', basePrice: 120 },
     { id: 'electronics', name: 'Electronics', basePrice: 150 }
 ];
+const COMPETITOR_NAMES = [
+    'Global Shipping Co.',
+    'Pacific Marine Lines',
+    'Atlantic Freight Inc.',
+    'Orient Express Cargo',
+    'Nordic Sea Transport',
+    'Mediterranean Traders',
+    'Cape Horn Shipping',
+    'Baltic Maritime Group',
+    'Caribbean Cargo Lines',
+    'Indian Ocean Traders'
+];
 // Main game logic for Ports of Call
 // Types are defined in types.ts
 // Constants are defined in constants.ts
@@ -66,14 +78,17 @@ let gameState = {
     company: {
         name: '',
         cash: 100000,
-        founded: new Date(1985, 0, 1)
+        founded: new Date(1985, 0, 1),
+        isPlayer: true
     },
     currentDate: new Date(1985, 0, 1),
     currentShip: null,
     ships: [],
     currentPort: null,
     navigating: false,
-    navigationTarget: null
+    navigationTarget: null,
+    competitors: [],
+    gameSpeed: 1
 };
 // Cargo market prices (vary by port)
 let cargoMarket = {};
@@ -179,14 +194,20 @@ function initializeGame() {
         speed: shipType.speed,
         condition: 100,
         cargo: {},
-        currentPort: startPort
+        currentPort: startPort,
+        route: null,
+        status: 'idle',
+        progress: 0
     };
     gameState.ships = [ship];
     gameState.currentShip = ship;
     gameState.currentPort = startPort;
     initializeCargoMarket();
+    initializeCompetitors(5); // Create 5 competitors
     showScreen('game-screen');
     updateDisplay();
+    // Start game loop
+    startGameLoop();
 }
 function updateDisplay() {
     const ship = gameState.currentShip;
@@ -825,6 +846,226 @@ function updateCargoMarket() {
         });
     });
 }
+function initializeCompetitors(count) {
+    gameState.competitors = [];
+    for (let i = 0; i < count; i++) {
+        const companyName = COMPETITOR_NAMES[i % COMPETITOR_NAMES.length];
+        const startPort = PORTS[Math.floor(Math.random() * PORTS.length)];
+        const shipType = SHIP_TYPES.coastal;
+        const ship = {
+            id: `comp${i}_ship1`,
+            name: `${companyName.split(' ')[0]} 1`,
+            type: 'coastal',
+            fuel: shipType.fuelCapacity,
+            fuelCapacity: shipType.fuelCapacity,
+            fuelConsumption: shipType.fuelConsumption,
+            capacity: shipType.capacity,
+            speed: shipType.speed,
+            condition: 100,
+            cargo: {},
+            currentPort: startPort,
+            route: null,
+            status: 'idle',
+            progress: 0
+        };
+        const competitor = {
+            company: {
+                name: companyName,
+                cash: 100000,
+                founded: new Date(1985, 0, 1),
+                isPlayer: false
+            },
+            ships: [ship]
+        };
+        gameState.competitors.push(competitor);
+        // Give competitor a random route
+        assignCompetitorRoute(ship, competitor);
+    }
+}
+function assignCompetitorRoute(ship, competitor) {
+    // Find a profitable route
+    const opportunities = [];
+    CARGO_TYPES.forEach(cargo => {
+        let lowestBuyPrice = Infinity;
+        let lowestBuyPort;
+        let highestSellPrice = -Infinity;
+        let highestSellPort;
+        PORTS.forEach(port => {
+            const buyPrice = cargoMarket[port.id][cargo.id].buyPrice;
+            const sellPrice = cargoMarket[port.id][cargo.id].sellPrice;
+            if (buyPrice < lowestBuyPrice) {
+                lowestBuyPrice = buyPrice;
+                lowestBuyPort = port;
+            }
+            if (sellPrice > highestSellPrice) {
+                highestSellPrice = sellPrice;
+                highestSellPort = port;
+            }
+        });
+        if (lowestBuyPort !== undefined && highestSellPort !== undefined &&
+            lowestBuyPort.id !== highestSellPort.id) {
+            const profitPerTon = highestSellPrice - lowestBuyPrice;
+            const distance = calculateDistance(lowestBuyPort, highestSellPort);
+            const fuelCost = Math.round(distance / ship.speed * ship.fuelConsumption * 2);
+            const netProfitPerTon = profitPerTon - (fuelCost / ship.capacity);
+            opportunities.push({
+                cargo: cargo.name,
+                buyPort: lowestBuyPort.name,
+                buyPrice: lowestBuyPrice,
+                sellPort: highestSellPort.name,
+                sellPrice: highestSellPrice,
+                profitPerTon: profitPerTon,
+                netProfitPerTon: Math.round(netProfitPerTon),
+                profitMargin: ((profitPerTon / lowestBuyPrice) * 100).toFixed(1),
+                distance: Math.round(distance),
+                fuelCost: fuelCost,
+                isCurrentPort: false
+            });
+        }
+    });
+    // Pick top 3 routes randomly
+    opportunities.sort((a, b) => b.netProfitPerTon - a.netProfitPerTon);
+    const topRoutes = opportunities.slice(0, 3);
+    if (topRoutes.length > 0) {
+        const selectedRoute = topRoutes[Math.floor(Math.random() * topRoutes.length)];
+        const buyPort = PORTS.find(p => p.name === selectedRoute.buyPort);
+        const sellPort = PORTS.find(p => p.name === selectedRoute.sellPort);
+        const cargoType = CARGO_TYPES.find(c => c.name === selectedRoute.cargo);
+        if (buyPort && sellPort && cargoType) {
+            ship.route = {
+                buyPort: buyPort,
+                buyCargoId: cargoType.id,
+                buyQuantity: Math.min(ship.capacity, 100),
+                sellPort: sellPort,
+                repeat: true
+            };
+        }
+    }
+}
+let gameLoopInterval = null;
+function startGameLoop() {
+    if (gameLoopInterval !== null) {
+        clearInterval(gameLoopInterval);
+    }
+    gameLoopInterval = window.setInterval(() => {
+        updateGameTick();
+    }, 1000 / gameState.gameSpeed); // Update every second (scaled by game speed)
+}
+function updateGameTick() {
+    // Update all ships (player and competitors)
+    const allShips = [
+        ...gameState.ships,
+        ...gameState.competitors.flatMap(c => c.ships)
+    ];
+    allShips.forEach(ship => {
+        if (ship.route) {
+            processShipRoute(ship);
+        }
+    });
+    // Update display if on game screen
+    const gameScreen = document.getElementById('game-screen');
+    if (gameScreen?.classList.contains('active')) {
+        updateDisplay();
+    }
+}
+function processShipRoute(ship) {
+    if (!ship.route)
+        return;
+    const route = ship.route;
+    switch (ship.status) {
+        case 'idle':
+            // Check if at buy port
+            if (ship.currentPort.id === route.buyPort.id) {
+                // Start loading
+                ship.status = 'loading';
+                ship.progress = 0;
+            }
+            else if (ship.currentPort.id === route.sellPort.id && Object.keys(ship.cargo).length > 0) {
+                // Start unloading
+                ship.status = 'unloading';
+                ship.progress = 0;
+            }
+            else {
+                // Need to travel to buy port
+                ship.status = 'traveling';
+                ship.progress = 0;
+            }
+            break;
+        case 'loading':
+            ship.progress += 10; // 10% per tick
+            if (ship.progress >= 100) {
+                // Buy cargo
+                const cost = route.buyQuantity * cargoMarket[route.buyPort.id][route.buyCargoId].buyPrice;
+                const owner = getShipOwner(ship);
+                if (owner && owner.company.cash >= cost) {
+                    owner.company.cash -= cost;
+                    ship.cargo[route.buyCargoId] = route.buyQuantity;
+                    ship.status = 'idle';
+                    ship.progress = 0;
+                }
+                else {
+                    ship.status = 'idle';
+                    ship.route = null; // Can't afford, cancel route
+                }
+            }
+            break;
+        case 'traveling':
+            const targetPort = Object.keys(ship.cargo).length > 0 ? route.sellPort : route.buyPort;
+            const distance = calculateDistance(ship.currentPort, targetPort);
+            const travelSpeed = ship.speed * 0.1; // 10% of speed per tick
+            ship.progress += (travelSpeed / distance) * 100;
+            if (ship.progress >= 100) {
+                // Arrived at destination
+                ship.currentPort = targetPort;
+                ship.progress = 0;
+                ship.status = 'idle';
+                // Consume fuel
+                const fuelUsed = distance / ship.speed * ship.fuelConsumption;
+                ship.fuel = Math.max(0, ship.fuel - fuelUsed);
+                // If out of fuel, stop
+                if (ship.fuel < ship.fuelCapacity * 0.1) {
+                    ship.route = null;
+                }
+            }
+            break;
+        case 'unloading':
+            ship.progress += 10;
+            if (ship.progress >= 100) {
+                // Sell cargo
+                const cargoId = Object.keys(ship.cargo)[0];
+                const quantity = ship.cargo[cargoId];
+                const revenue = quantity * cargoMarket[route.sellPort.id][cargoId].sellPrice;
+                const owner = getShipOwner(ship);
+                if (owner) {
+                    owner.company.cash += revenue;
+                    delete ship.cargo[cargoId];
+                    ship.status = 'idle';
+                    ship.progress = 0;
+                    // If route is set to repeat, continue
+                    if (route.repeat) {
+                        // Continue with route
+                    }
+                    else {
+                        ship.route = null;
+                    }
+                }
+            }
+            break;
+    }
+}
+function getShipOwner(ship) {
+    // Check if player ship
+    if (gameState.ships.includes(ship)) {
+        return { company: gameState.company, ships: gameState.ships };
+    }
+    // Check competitors
+    for (const competitor of gameState.competitors) {
+        if (competitor.ships.includes(ship)) {
+            return competitor;
+        }
+    }
+    return null;
+}
 function showMarketAnalysis() {
     const content = document.getElementById('action-content');
     if (!content || !gameState.currentShip || !gameState.currentPort)
@@ -992,7 +1233,10 @@ function buyShip(shipType) {
         speed: type.speed,
         condition: 100,
         cargo: {},
-        currentPort: gameState.currentPort
+        currentPort: gameState.currentPort,
+        route: null,
+        status: 'idle',
+        progress: 0
     };
     gameState.ships.push(newShip);
     updateDisplay();
@@ -1027,6 +1271,182 @@ function showFinances() {
         html += '</div>';
     }
     content.innerHTML = html;
+}
+function showFleetManager() {
+    const content = document.getElementById('action-content');
+    if (!content)
+        return;
+    let html = '<h2>🚢 Fleet Manager</h2>';
+    html += `<p>Manage your ${gameState.ships.length} ship${gameState.ships.length > 1 ? 's' : ''}</p>`;
+    gameState.ships.forEach(ship => {
+        html += '<div style="margin: 10px 0; padding: 15px; background: rgba(255,136,0,0.1); border: 2px solid #ff8800;">';
+        html += `<h3>${ship.name} (${SHIP_TYPES[ship.type].name})</h3>`;
+        html += `<p><strong>Location:</strong> ${ship.currentPort.name} | `;
+        html += `<strong>Status:</strong> ${ship.status.toUpperCase()} `;
+        if (ship.status !== 'idle') {
+            html += `(${Math.round(ship.progress)}%)`;
+        }
+        html += `</p>`;
+        html += `<p><strong>Fuel:</strong> ${Math.round(ship.fuel)}/${ship.fuelCapacity} | `;
+        html += `<strong>Condition:</strong> ${Math.round(ship.condition)}%</p>`;
+        if (ship.route) {
+            html += `<p><strong>Route:</strong> ${ship.route.buyPort.name} → ${ship.route.sellPort.name}</p>`;
+            html += `<p><strong>Cargo:</strong> ${CARGO_TYPES.find(c => c.id === ship.route.buyCargoId)?.name} (${ship.route.buyQuantity} tons)</p>`;
+            html += `<button class="amiga-btn small" onclick="cancelRoute('${ship.id}')">❌ CANCEL ROUTE</button>`;
+        }
+        else {
+            html += `<p style="color: #ffff00;"><strong>⚠️ No Route Assigned</strong></p>`;
+            html += `<button class="amiga-btn small" onclick="assignRoute('${ship.id}')">📋 ASSIGN ROUTE</button>`;
+        }
+        html += '</div>';
+    });
+    content.innerHTML = html;
+}
+function showCompetitors() {
+    const content = document.getElementById('action-content');
+    if (!content)
+        return;
+    // Calculate total assets for all companies
+    const rankings = [];
+    // Add player
+    const playerShipValue = gameState.ships.reduce((sum, ship) => {
+        return sum + (SHIP_TYPES[ship.type].cost * (ship.condition / 100));
+    }, 0);
+    rankings.push({
+        name: gameState.company.name,
+        assets: gameState.company.cash + playerShipValue,
+        ships: gameState.ships.length,
+        isPlayer: true
+    });
+    // Add competitors
+    gameState.competitors.forEach(comp => {
+        const shipValue = comp.ships.reduce((sum, ship) => {
+            return sum + (SHIP_TYPES[ship.type].cost * (ship.condition / 100));
+        }, 0);
+        rankings.push({
+            name: comp.company.name,
+            assets: comp.company.cash + shipValue,
+            ships: comp.ships.length,
+            isPlayer: false
+        });
+    });
+    // Sort by assets
+    rankings.sort((a, b) => b.assets - a.assets);
+    let html = '<h2>🏆 Leaderboard</h2>';
+    html += `<p>Competing against ${gameState.competitors.length} other companies</p>`;
+    html += '<table>';
+    html += '<tr><th>Rank</th><th>Company</th><th>Total Assets</th><th>Ships</th></tr>';
+    rankings.forEach((company, index) => {
+        const rowStyle = company.isPlayer ? 'style="background: rgba(0,255,0,0.2); font-weight: bold;"' : '';
+        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '';
+        const playerBadge = company.isPlayer ? ' 👤' : '';
+        html += `<tr ${rowStyle}>`;
+        html += `<td>${medal} ${index + 1}</td>`;
+        html += `<td>${company.name}${playerBadge}</td>`;
+        html += `<td>$${company.assets.toLocaleString()}</td>`;
+        html += `<td>${company.ships}</td>`;
+        html += '</tr>';
+    });
+    html += '</table>';
+    // Show competitor activity
+    html += '<h3 style="margin-top: 20px;">📈 Recent Activity</h3>';
+    html += '<div style="max-height: 200px; overflow-y: auto;">';
+    gameState.competitors.slice(0, 5).forEach(comp => {
+        html += `<div style="margin: 5px 0; padding: 8px; background: rgba(0,0,0,0.2);">`;
+        html += `<strong>${comp.company.name}</strong>: `;
+        const activeShips = comp.ships.filter(s => s.route);
+        if (activeShips.length > 0) {
+            html += `${activeShips.length} ship${activeShips.length > 1 ? 's' : ''} trading`;
+        }
+        else {
+            html += 'No active routes';
+        }
+        html += `</div>`;
+    });
+    html += '</div>';
+    content.innerHTML = html;
+}
+function changeGameSpeed() {
+    const speeds = [1, 2, 5, 10];
+    const currentIndex = speeds.indexOf(gameState.gameSpeed);
+    const nextIndex = (currentIndex + 1) % speeds.length;
+    gameState.gameSpeed = speeds[nextIndex];
+    const btn = document.getElementById('speed-btn');
+    if (btn) {
+        btn.textContent = `⏩ SPEED: ${gameState.gameSpeed}x`;
+    }
+    // Restart game loop with new speed
+    startGameLoop();
+}
+function assignRoute(shipId) {
+    const ship = gameState.ships.find(s => s.id === shipId);
+    if (!ship)
+        return;
+    const content = document.getElementById('action-content');
+    if (!content)
+        return;
+    let html = `<h2>📋 Assign Route for ${ship.name}</h2>`;
+    html += `<p>Current Location: ${ship.currentPort.name}</p>`;
+    html += '<h3>Select Trade Route:</h3>';
+    // Get best routes
+    const opportunities = [];
+    CARGO_TYPES.forEach(cargo => {
+        PORTS.forEach(buyPort => {
+            PORTS.forEach(sellPort => {
+                if (buyPort.id !== sellPort.id) {
+                    const buyPrice = cargoMarket[buyPort.id][cargo.id].buyPrice;
+                    const sellPrice = cargoMarket[sellPort.id][cargo.id].sellPrice;
+                    const profit = sellPrice - buyPrice;
+                    if (profit > 0) {
+                        opportunities.push({
+                            buyPort: buyPort,
+                            sellPort: sellPort,
+                            cargo: cargo,
+                            profit: profit
+                        });
+                    }
+                }
+            });
+        });
+    });
+    opportunities.sort((a, b) => b.profit - a.profit);
+    html += '<div style="max-height: 400px; overflow-y: auto;">';
+    opportunities.slice(0, 20).forEach((opp, index) => {
+        html += `<div style="margin: 5px 0; padding: 10px; background: rgba(255,136,0,0.1); border: 1px solid #ff8800; cursor: pointer;" `;
+        html += `onclick="setShipRoute('${shipId}', '${opp.buyPort.id}', '${opp.sellPort.id}', '${opp.cargo.id}')">`;
+        html += `<strong>${index + 1}. ${opp.cargo.name}</strong><br>`;
+        html += `${opp.buyPort.name} → ${opp.sellPort.name}<br>`;
+        html += `<span style="color: #00ff00;">Profit: $${opp.profit}/ton</span>`;
+        html += `</div>`;
+    });
+    html += '</div>';
+    html += `<button class="amiga-btn" onclick="showFleetManager()">← BACK</button>`;
+    content.innerHTML = html;
+}
+function setShipRoute(shipId, buyPortId, sellPortId, cargoId) {
+    const ship = gameState.ships.find(s => s.id === shipId);
+    const buyPort = PORTS.find(p => p.id === buyPortId);
+    const sellPort = PORTS.find(p => p.id === sellPortId);
+    if (ship && buyPort && sellPort) {
+        ship.route = {
+            buyPort: buyPort,
+            buyCargoId: cargoId,
+            buyQuantity: Math.min(ship.capacity, 100),
+            sellPort: sellPort,
+            repeat: true
+        };
+        showMessage('Route Assigned', `${ship.name} will trade between ${buyPort.name} and ${sellPort.name}`);
+        showFleetManager();
+    }
+}
+function cancelRoute(shipId) {
+    const ship = gameState.ships.find(s => s.id === shipId);
+    if (ship) {
+        ship.route = null;
+        ship.status = 'idle';
+        ship.progress = 0;
+        showFleetManager();
+    }
 }
 // Keyboard controls
 document.addEventListener('keydown', (e) => {
@@ -1104,5 +1524,11 @@ window.cancelNavigation = cancelNavigation;
 window.manualDocking = manualDocking;
 window.hirePilot = hirePilot;
 window.closeMessage = closeMessage;
+window.showFleetManager = showFleetManager;
+window.showCompetitors = showCompetitors;
+window.changeGameSpeed = changeGameSpeed;
+window.assignRoute = assignRoute;
+window.setShipRoute = setShipRoute;
+window.cancelRoute = cancelRoute;
 // Type definitions for Ports of Call game
 //# sourceMappingURL=game.js.map

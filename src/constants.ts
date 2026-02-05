@@ -83,3 +83,16 @@ const CARGO_TYPES: CargoType[] = [
     { id: 'machinery', name: 'Machinery', basePrice: 120 },
     { id: 'electronics', name: 'Electronics', basePrice: 150 }
 ];
+
+const COMPETITOR_NAMES: string[] = [
+    'Global Shipping Co.',
+    'Pacific Marine Lines',
+    'Atlantic Freight Inc.',
+    'Orient Express Cargo',
+    'Nordic Sea Transport',
+    'Mediterranean Traders',
+    'Cape Horn Shipping',
+    'Baltic Maritime Group',
+    'Caribbean Cargo Lines',
+    'Indian Ocean Traders'
+];
