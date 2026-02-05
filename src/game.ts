@@ -158,9 +158,6 @@ function initializeGame(): void {
 }
 
 function updateDisplay(): void {
-    const ship = gameState.currentShip;
-    if (!ship) return;
-    
     // Update date
     const dateElement = document.getElementById('game-date');
     if (dateElement) {
@@ -192,7 +189,10 @@ function updateDisplay(): void {
         shipCountElement.textContent = gameState.ships.length.toString();
     }
     
-    // Update ship info
+    // Update ship info (use first ship if currentShip is null)
+    const ship = gameState.currentShip || gameState.ships[0];
+    if (!ship) return;
+    
     const shipNameElement = document.getElementById('ship-name');
     if (shipNameElement) {
         shipNameElement.textContent = ship.name;
@@ -1405,6 +1405,7 @@ function showFleetManager(): void {
     
     let html = '<h2>🚢 Fleet Manager</h2>';
     html += `<p>Manage your ${gameState.ships.length} ship${gameState.ships.length > 1 ? 's' : ''}</p>`;
+    html += `<p style="font-size: 12px; color: #ffff00;">💡 Cash: $${gameState.company.cash.toLocaleString()} | Game Speed: ${gameState.gameSpeed}x</p>`;
     
     gameState.ships.forEach(ship => {
         html += '<div style="margin: 10px 0; padding: 15px; background: rgba(255,136,0,0.1); border: 2px solid #ff8800;">';
@@ -1418,9 +1419,18 @@ function showFleetManager(): void {
         html += `<p><strong>Fuel:</strong> ${Math.round(ship.fuel)}/${ship.fuelCapacity} | `;
         html += `<strong>Condition:</strong> ${Math.round(ship.condition)}%</p>`;
         
+        // Show cargo
+        const cargoList = Object.entries(ship.cargo).map(([id, qty]) => {
+            const cargoType = CARGO_TYPES.find(c => c.id === id);
+            return `${cargoType?.name || id}: ${qty}t`;
+        }).join(', ');
+        if (cargoList) {
+            html += `<p><strong>Cargo:</strong> ${cargoList}</p>`;
+        }
+        
         if (ship.route) {
             html += `<p><strong>Route:</strong> ${ship.route.buyPort.name} → ${ship.route.sellPort.name}</p>`;
-            html += `<p><strong>Cargo:</strong> ${CARGO_TYPES.find(c => c.id === ship.route!.buyCargoId)?.name} (${ship.route.buyQuantity} tons)</p>`;
+            html += `<p><strong>Trading:</strong> ${CARGO_TYPES.find(c => c.id === ship.route!.buyCargoId)?.name} (${ship.route.buyQuantity} tons)</p>`;
             html += `<button class="amiga-btn small" onclick="cancelRoute('${ship.id}')">❌ CANCEL ROUTE</button>`;
         } else {
             html += `<p style="color: #ffff00;"><strong>⚠️ No Route Assigned</strong></p>`;
