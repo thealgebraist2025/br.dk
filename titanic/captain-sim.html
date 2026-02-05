@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titanic Captain Simulator</title>
+    <link rel="stylesheet" href="captain-sim.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚓ RMS TITANIC - CAPTAIN SIMULATOR ⚓</h1>
+            <div class="ship-status">
+                <div class="status-item">
+                    <span>🚢 Ship Status:</span>
+                    <span id="ship-status">Sailing</span>
+                </div>
+                <div class="status-item">
+                    <span>👥 Passengers:</span>
+                    <span id="passengers">2,224</span>
+                </div>
+                <div class="status-item">
+                    <span>⚡ Speed:</span>
+                    <span id="speed">22 knots</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="game-area">
+            <div class="scene-image">
+                <img id="scene-img" src="" alt="Scene">
+            </div>
+
+            <div class="narrative-box">
+                <p id="narrative-text"></p>
+            </div>
+
+            <div class="choices" id="choices">
+                <!-- Choices will be dynamically inserted here -->
+            </div>
+
+            <div class="outcome" id="outcome" style="display: none;">
+                <h2 id="outcome-title"></h2>
+                <p id="outcome-text"></p>
+                <button onclick="restartGame()">Start New Voyage</button>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h3>📜 Captain's Log</h3>
+            <div id="log"></div>
+        </div>
+    </div>
+
+    <script src="captain-sim.js"></script>
+</body>
+</html>

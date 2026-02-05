@@ -1,0 +1,396 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background: #000;
+    color: #fff;
+    overflow: hidden;
+}
+
+/* Amiga-style screen */
+.amiga-screen {
+    width: 100vw;
+    height: 100vh;
+    background: #0055aa;
+    position: relative;
+    overflow: auto;
+}
+
+.amiga-bar {
+    background: linear-gradient(to bottom, #fff 0%, #ccc 100%);
+    color: #000;
+    padding: 4px 10px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    border-bottom: 2px solid #000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Screens */
+.screen {
+    display: none;
+    padding: 20px;
+    min-height: calc(100vh - 30px);
+}
+
+.screen.active {
+    display: block;
+}
+
+h1 {
+    text-align: center;
+    font-size: 3em;
+    margin: 40px 0 10px 0;
+    text-shadow: 3px 3px 0 #000;
+    color: #ff8800;
+}
+
+h2 {
+    color: #ffcc00;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 0 #000;
+}
+
+h3 {
+    color: #ffaa00;
+    margin-bottom: 10px;
+    font-size: 1em;
+    border-bottom: 1px solid #fff;
+    padding-bottom: 5px;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 1.2em;
+    margin-bottom: 30px;
+    color: #fff;
+}
+
+/* Boxes */
+.menu-box, .text-box, .form-box {
+    background: rgba(0, 0, 0, 0.3);
+    border: 3px solid #fff;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 600px;
+    box-shadow: 5px 5px 0 rgba(0,0,0,0.5);
+}
+
+.text-box p {
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.text-box ul {
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+
+.text-box li {
+    margin-bottom: 5px;
+}
+
+/* Buttons */
+.amiga-btn {
+    background: linear-gradient(to bottom, #ff8800 0%, #ff5500 100%);
+    color: #fff;
+    border: 3px solid #fff;
+    padding: 12px 30px;
+    font-size: 1.1em;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    margin: 10px;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+    transition: all 0.1s;
+    display: inline-block;
+}
+
+.amiga-btn:hover {
+    background: linear-gradient(to bottom, #ffaa00 0%, #ff7700 100%);
+    transform: translateY(-2px);
+    box-shadow: 5px 5px 0 rgba(0,0,0,0.5);
+}
+
+.amiga-btn:active {
+    transform: translateY(0);
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+}
+
+.amiga-btn.small {
+    padding: 8px 15px;
+    font-size: 0.9em;
+    margin: 5px;
+}
+
+/* Forms */
+.form-box label {
+    display: block;
+    margin: 15px 0 5px 0;
+    color: #ffcc00;
+}
+
+.form-box input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.1em;
+    font-family: 'Courier New', monospace;
+    background: #fff;
+    border: 2px solid #000;
+    color: #000;
+}
+
+/* Game Layout */
+.game-layout {
+    display: flex;
+    gap: 20px;
+    height: calc(100vh - 70px);
+}
+
+.status-panel {
+    width: 300px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 3px solid #fff;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+.status-section {
+    margin-bottom: 20px;
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.status-item span:first-child {
+    color: #ffcc00;
+}
+
+.value {
+    color: #00ff00;
+    font-weight: bold;
+}
+
+.action-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.action-content {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.4);
+    border: 3px solid #fff;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.welcome-msg {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.welcome-msg h2 {
+    color: #ffcc00;
+    margin-bottom: 20px;
+}
+
+.welcome-msg p {
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
+.hint {
+    color: #00ff00;
+    font-style: italic;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+table th {
+    background: rgba(255, 136, 0, 0.5);
+    color: #fff;
+    padding: 10px;
+    text-align: left;
+    border: 2px solid #fff;
+}
+
+table td {
+    padding: 8px;
+    border: 1px solid #fff;
+}
+
+table tr:nth-child(even) {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+table tr:hover {
+    background: rgba(255, 136, 0, 0.3);
+}
+
+/* Canvas */
+canvas {
+    display: block;
+    margin: 20px auto;
+    border: 3px solid #fff;
+    background: #001133;
+    box-shadow: 5px 5px 0 rgba(0,0,0,0.5);
+}
+
+/* Navigation */
+.nav-controls {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.nav-row {
+    margin: 15px 0;
+}
+
+.dock-controls {
+    text-align: center;
+    margin: 20px 0;
+}
+
+/* Messages */
+.message-box {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.message-box.hidden {
+    display: none;
+}
+
+.message-content {
+    background: #0055aa;
+    border: 5px solid #fff;
+    padding: 30px;
+    max-width: 500px;
+    text-align: center;
+    box-shadow: 10px 10px 0 rgba(0,0,0,0.5);
+}
+
+.message-content h3 {
+    color: #ffcc00;
+    border: none;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+}
+
+.message-content p {
+    margin-bottom: 20px;
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+/* Credits */
+.credits {
+    text-align: center;
+    margin-top: 40px;
+    color: #aaa;
+    font-size: 0.9em;
+}
+
+/* Cargo Display */
+.cargo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.cargo-item {
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #fff;
+    padding: 15px;
+    text-align: center;
+}
+
+.cargo-item h4 {
+    color: #ffaa00;
+    margin-bottom: 10px;
+}
+
+.cargo-item .price {
+    color: #00ff00;
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+.cargo-item input {
+    width: 80px;
+    padding: 5px;
+    text-align: center;
+}
+
+/* Map */
+.port-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px;
+}
+
+.port-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #fff;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.port-card:hover {
+    background: rgba(255, 136, 0, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+}
+
+.port-card h4 {
+    color: #ffaa00;
+    margin-bottom: 5px;
+}
+
+.port-distance {
+    color: #00ff00;
+    font-size: 0.9em;
+}
+
+@media (max-width: 1024px) {
+    .game-layout {
+        flex-direction: column;
+    }
+    
+    .status-panel {
+        width: 100%;
+        height: auto;
+    }
+}
