@@ -1,0 +1,27 @@
+import type { Port } from './types';
+export declare function showScreen(screenId: string): void;
+export declare function showMessage(title: string, message: string): void;
+export declare function closeMessage(): void;
+export declare function showMainMenu(): void;
+export declare function showInstructions(): void;
+export declare function startNewGame(): void;
+export declare function initializeCargoMarket(): void;
+export declare function initializeGame(): void;
+export declare function updateDisplay(): void;
+export declare function calculateDistance(port1: Port, port2: Port): number;
+export declare function showMap(): void;
+export declare function navigateToPort(portId: string): void;
+export declare function manualDocking(): void;
+export declare function hirePilot(): void;
+export declare function dockingControl(action: string): void;
+export declare function cancelNavigation(): void;
+export declare function showCargo(): void;
+export declare function buyCargo(cargoId: string): void;
+export declare function sellCargo(cargoId: string): void;
+export declare function showMarketAnalysis(): void;
+export declare function refuelShip(): void;
+export declare function repairShip(): void;
+export declare function showShipyard(): void;
+export declare function buyShip(shipType: string): void;
+export declare function showFinances(): void;
+//# sourceMappingURL=game.d.ts.map
