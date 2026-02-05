@@ -873,6 +873,7 @@ window.dockingControl = function(action) {
 // Make functions globally accessible
 window.manualDocking = manualDocking;
 window.hirePilot = hirePilot;
+window.showMarketAnalysis = showMarketAnalysis;
 
 function cancelNavigation() {
     gameState.navigating = false;
@@ -967,6 +968,128 @@ function updateCargoMarket() {
             cargoMarket[port.id][cargo.id].sellPrice = Math.round(cargo.basePrice * variance * 1.2);
         });
     });
+}
+
+function showMarketAnalysis() {
+    const content = document.getElementById('action-content');
+    
+    // Calculate all profitable trade routes
+    const tradeOpportunities = [];
+    
+    CARGO_TYPES.forEach(cargo => {
+        let lowestBuyPrice = Infinity;
+        let lowestBuyPort = null;
+        let highestSellPrice = -Infinity;
+        let highestSellPort = null;
+        
+        // Find lowest buy price and highest sell price for this cargo
+        PORTS.forEach(port => {
+            const buyPrice = cargoMarket[port.id][cargo.id].buyPrice;
+            const sellPrice = cargoMarket[port.id][cargo.id].sellPrice;
+            
+            if (buyPrice < lowestBuyPrice) {
+                lowestBuyPrice = buyPrice;
+                lowestBuyPort = port;
+            }
+            
+            if (sellPrice > highestSellPrice) {
+                highestSellPrice = sellPrice;
+                highestSellPort = port;
+            }
+        });
+        
+        // Calculate profit and distance
+        if (lowestBuyPort && highestSellPort && lowestBuyPort.id !== highestSellPort.id) {
+            const profitPerTon = highestSellPrice - lowestBuyPrice;
+            const distance = calculateDistance(lowestBuyPort, highestSellPort);
+            const fuelCost = Math.round(distance / gameState.currentShip.speed * gameState.currentShip.fuelConsumption * 2);
+            const netProfitPerTon = profitPerTon - (fuelCost / gameState.currentShip.capacity);
+            const profitMargin = ((profitPerTon / lowestBuyPrice) * 100).toFixed(1);
+            
+            tradeOpportunities.push({
+                cargo: cargo.name,
+                buyPort: lowestBuyPort.name,
+                buyPrice: lowestBuyPrice,
+                sellPort: highestSellPort.name,
+                sellPrice: highestSellPrice,
+                profitPerTon: profitPerTon,
+                netProfitPerTon: Math.round(netProfitPerTon),
+                profitMargin: profitMargin,
+                distance: Math.round(distance),
+                fuelCost: fuelCost,
+                isCurrentPort: lowestBuyPort.id === gameState.currentPort.id
+            });
+        }
+    });
+    
+    // Sort by net profit per ton (accounting for fuel)
+    tradeOpportunities.sort((a, b) => b.netProfitPerTon - a.netProfitPerTon);
+    
+    let html = '<h2>📊 Market Analysis</h2>';
+    html += `<p><strong>Date:</strong> ${gameState.currentDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric', day: 'numeric' })}</p>`;
+    html += `<p><strong>Analysis:</strong> Best trading opportunities across all ports (accounting for fuel costs)</p>`;
+    html += '<div style="margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.3); border: 2px solid #ff8800;">';
+    html += '<p style="margin: 5px 0;">💡 <strong>Strategy Tips:</strong></p>';
+    html += '<p style="margin: 5px 0; font-size: 12px;">• Routes marked with ⭐ start from your current port</p>';
+    html += '<p style="margin: 5px 0; font-size: 12px;">• Net profit already subtracts fuel costs</p>';
+    html += '<p style="margin: 5px 0; font-size: 12px;">• Higher profit margins mean better returns on investment</p>';
+    html += '</div>';
+    
+    html += '<table>';
+    html += '<tr>';
+    html += '<th>Rank</th>';
+    html += '<th>Cargo</th>';
+    html += '<th>Buy At</th>';
+    html += '<th>Sell At</th>';
+    html += '<th>Buy Price</th>';
+    html += '<th>Sell Price</th>';
+    html += '<th>Gross Profit/ton</th>';
+    html += '<th>Fuel Cost</th>';
+    html += '<th>Net Profit/ton</th>';
+    html += '<th>Margin</th>';
+    html += '<th>Distance</th>';
+    html += '</tr>';
+    
+    tradeOpportunities.slice(0, 10).forEach((opp, index) => {
+        const rowClass = opp.isCurrentPort ? 'style="background: rgba(0,255,0,0.1);"' : '';
+        const star = opp.isCurrentPort ? '⭐ ' : '';
+        const profitColor = opp.netProfitPerTon > 50 ? '#00ff00' : opp.netProfitPerTon > 20 ? '#ffff00' : '#ff8800';
+        
+        html += `<tr ${rowClass}>`;
+        html += `<td><strong>${index + 1}</strong></td>`;
+        html += `<td>${star}${opp.cargo}</td>`;
+        html += `<td style="color: #00ccff">${opp.buyPort}</td>`;
+        html += `<td style="color: #00ccff">${opp.sellPort}</td>`;
+        html += `<td style="color: #ff6600">$${opp.buyPrice}</td>`;
+        html += `<td style="color: #00ff00">$${opp.sellPrice}</td>`;
+        html += `<td style="color: ${profitColor}"><strong>$${opp.profitPerTon}</strong></td>`;
+        html += `<td style="color: #ff6600">$${opp.fuelCost}</td>`;
+        html += `<td style="color: ${profitColor}"><strong>$${opp.netProfitPerTon}</strong></td>`;
+        html += `<td style="color: ${profitColor}">${opp.profitMargin}%</td>`;
+        html += `<td>${opp.distance} nm</td>`;
+        html += '</tr>';
+    });
+    
+    html += '</table>';
+    
+    // Show current port opportunities
+    html += '<h3 style="margin-top: 20px;">🎯 Opportunities from ' + gameState.currentPort.name + '</h3>';
+    const currentPortOpps = tradeOpportunities.filter(opp => opp.isCurrentPort).slice(0, 5);
+    
+    if (currentPortOpps.length > 0) {
+        html += '<div style="margin-top: 10px;">';
+        currentPortOpps.forEach((opp, index) => {
+            html += `<div style="padding: 8px; margin: 5px 0; background: rgba(255,136,0,0.2); border-left: 3px solid #ff8800;">`;
+            html += `<strong>${index + 1}. ${opp.cargo}</strong> → ${opp.sellPort}<br>`;
+            html += `<span style="font-size: 12px;">Buy: $${opp.buyPrice} | Sell: $${opp.sellPrice} | Net Profit: <span style="color: #00ff00">$${opp.netProfitPerTon}/ton</span> (${opp.profitMargin}% margin)</span>`;
+            html += `</div>`;
+        });
+        html += '</div>';
+    } else {
+        html += '<p>No highly profitable routes from this port. Consider navigating elsewhere!</p>';
+    }
+    
+    content.innerHTML = html;
 }
 
 function refuelShip() {
